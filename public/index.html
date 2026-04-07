@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>精准时钟 - 实时日期时间（含农历）</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="clock-container">
+        <div class="date-box" id="dateDisplay">加载中...</div>
+        <div class="lunar-box" id="lunarDisplay">🌙 加载农历...</div>
+        <div>
+            <span class="time-main" id="timeDisplay">--:--:--</span>
+            <span class="milliseconds" id="msDisplay">.---</span>
+        </div>
+        <div class="timezone-bar">
+            <span class="info-chip">🇨🇳 北京时间 (UTC+8)</span>
+            <span class="info-chip">📡 高精度本地时钟</span>
+            <span class="info-chip">🌕 农历实时显示</span>
+        </div>
+        <button id="syncBtn">⟳ 同步服务器时间</button>
+        <div class="refresh-note">
+            🕒 实时刷新 ｜ 基于高精度计时器 ｜ 农历 + 公历
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
