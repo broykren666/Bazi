@@ -73,6 +73,14 @@ body {
     text-shadow: 0 0 8px rgba(255, 217, 102, 0.2);
 }
 
+.time-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0;
+    margin: 20px 0;
+}
+
 .time-main {
     font-size: 6.5rem;
     font-weight: 600;
@@ -86,7 +94,6 @@ body {
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-    margin: 20px 0;
     line-height: 1;
 }
 
@@ -98,11 +105,10 @@ body {
     background: #0a0e2a;
     padding: 0.2rem 0.7rem;
     border-radius: 40px;
-    display: inline-block;
-    margin-left: 12px;
     border: 1px solid #3e6eff30;
     text-shadow: 0 0 10px rgba(136, 170, 255, 0.4);
     letter-spacing: 2px;
+    margin-left: 8px;
 }
 
 .timezone-bar {
@@ -167,6 +173,10 @@ button:disabled {
 @media (max-width: 550px) {
     .clock-container {
         padding: 1.5rem;
+    }
+    .time-wrapper {
+        flex-direction: row;
+        flex-wrap: wrap;
     }
     .time-main {
         font-size: 3rem;
