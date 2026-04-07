@@ -4,6 +4,26 @@ const path = require('path');
 const url = require('url');
 const LunarCalendar = require('lunar-calendar');
 
+// 农历数字转中文
+const lunarDigits = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+
+// 将农历数字转换为中文
+function toLunarChinese(num) {
+    if (num <= 10) return lunarDigits[num];
+    if (num < 20) return '十' + lunarDigits[num - 10];
+    if (num === 20) return '二十';
+    if (num < 30) return '廿' + lunarDigits[num - 20];
+    if (num === 30) return '三十';
+    return num.toString();
+}
+
+// 天干
+const heavenlyStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+// 地支
+const earthlyBranches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+// 生肖
+const zodiacs = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
+
 const PORT = 3243;
 
 // 定义MIME类型
@@ -53,19 +73,27 @@ const server = http.createServer((req, res) => {
         try {
             // 使用 lunar-calendar 库计算农历
             const lunar = LunarCalendar.solarToLunar(year, month, day);
+
+            // 计算天干地支
+            const yearIndex = (lunar.lunarYear - 4) % 60;
+            const stemIndex = yearIndex % 10;
+            const branchIndex = yearIndex % 12;
+            const ganzhi = heavenlyStems[stemIndex] + earthlyBranches[branchIndex];
             
-            // 格式化农历字符串
-            let lunarStr = `${lunar.lunarYear}年 ${lunar.lunarMonth}月${lunar.lunarDay}`;
+            // 计算生肖
+            const zodiacIndex = (lunar.lunarYear - 4) % 12;
+            const zodiac = zodiacs[zodiacIndex];
+
+            // 格式化农历字符串为中文汉字
+            const yearChinese = toLunarChinese(lunar.lunarYear);
+            const monthChinese = toLunarChinese(lunar.lunarMonth);
+            const dayChinese = toLunarChinese(lunar.lunarDay);
+            
+            let lunarStr = `${ganzhi}${zodiac}年 ${monthChinese}月${dayChinese}`;
             if (lunar.isLeap) {
                 lunarStr = `闰${lunarStr}`;
             }
-            if (lunar.lunarYearName) {
-                lunarStr = `${lunar.lunarYearName}年 ${lunarStr.replace(lunar.lunarYear + '年', '')}`;
-            }
-            // 添加生肖
-            const zodiac = lunar.zodiac;
-            lunarStr = `${lunarStr} (${zodiac}年)`;
-            
+
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ success: true, lunarStr }));
         } catch (err) {

@@ -65,7 +65,7 @@
             })
             .catch(err => {
                 console.error('农历API错误:', err);
-                return '🌙 加载失败';
+                return '🪭 加载失败';
             });
     }
 
@@ -78,7 +78,7 @@
         
         if (cachedLunar[cacheKey]) {
             const lunarElem = document.getElementById('lunarDisplay');
-            if (lunarElem) lunarElem.innerHTML = `🌙 ${cachedLunar[cacheKey]}`;
+            if (lunarElem) lunarElem.innerHTML = `🪭 ${cachedLunar[cacheKey]}`;
             return;
         }
         
@@ -88,7 +88,7 @@
             const lunarStr = await fetchLunarFromServer(year, month, day);
             cachedLunar[cacheKey] = lunarStr;
             const lunarElem = document.getElementById('lunarDisplay');
-            if (lunarElem) lunarElem.innerHTML = `🌙 ${lunarStr}`;
+            if (lunarElem) lunarElem.innerHTML = `🪭 ${lunarStr}`;
         }
     }
 

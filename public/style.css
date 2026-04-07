@@ -33,6 +33,14 @@ body {
     transform: translateY(-5px);
 }
 
+.date-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
 .date-box {
     font-size: 2rem;
     letter-spacing: 2px;
@@ -41,7 +49,6 @@ body {
     padding: 0.5rem 1.2rem;
     border-radius: 60px;
     display: inline-block;
-    margin-bottom: 0.8rem;
     backdrop-filter: blur(4px);
     font-family: monospace;
     border: 1px solid #2c3f8f;
@@ -54,7 +61,6 @@ body {
     padding: 0.3rem 1rem;
     border-radius: 40px;
     display: inline-block;
-    margin-bottom: 1.2rem;
     font-family: system-ui, 'Segoe UI', sans-serif;
     letter-spacing: 1px;
     border: 1px solid #ffaa3340;
