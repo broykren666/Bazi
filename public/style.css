@@ -1,3 +1,6 @@
+/* 引入现代等宽字体 */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -7,7 +10,7 @@
 
 body {
     background: #0a0e27;
-    font-family: 'Courier New', 'SF Mono', 'Fira Code', 'Monaco', monospace;
+    font-family: 'Inter', 'SF Pro Display', -apple-system, 'Segoe UI', sans-serif;
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -43,52 +46,63 @@ body {
 
 .date-box {
     font-size: 2rem;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     font-weight: 500;
     background: #01031a80;
     padding: 0.5rem 1.2rem;
     border-radius: 60px;
     display: inline-block;
     backdrop-filter: blur(4px);
-    font-family: monospace;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
     border: 1px solid #2c3f8f;
+    color: #a8c8ff;
+    text-shadow: 0 0 12px rgba(100, 150, 255, 0.3);
 }
 
 .lunar-box {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: #ffd966;
     background: #1a1f3a;
-    padding: 0.3rem 1rem;
+    padding: 0.35rem 1.2rem;
     border-radius: 40px;
     display: inline-block;
-    font-family: system-ui, 'Segoe UI', sans-serif;
-    letter-spacing: 1px;
+    font-family: 'Inter', system-ui, 'Segoe UI', sans-serif;
+    letter-spacing: 1.5px;
     border: 1px solid #ffaa3340;
+    font-weight: 500;
+    text-shadow: 0 0 8px rgba(255, 217, 102, 0.2);
 }
 
 .time-main {
-    font-size: 6rem;
-    font-weight: 700;
-    font-family: 'Fira Mono', 'Courier New', monospace;
-    letter-spacing: 8px;
-    text-shadow: 0 0 8px #3e6eff80;
-    background: linear-gradient(135deg, #ffffff, #b0e0ff);
+    font-size: 6.5rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    letter-spacing: 10px;
+    text-shadow: 
+        0 0 15px rgba(62, 110, 255, 0.5),
+        0 0 30px rgba(62, 110, 255, 0.3),
+        0 0 45px rgba(62, 110, 255, 0.15);
+    background: linear-gradient(180deg, #ffffff 0%, #c8e4ff 50%, #88bbff 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
     margin: 20px 0;
+    line-height: 1;
 }
 
 .milliseconds {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     font-weight: 400;
-    font-family: monospace;
+    font-family: 'JetBrains Mono', monospace;
     color: #88aaff;
     background: #0a0e2a;
-    padding: 0 0.6rem;
+    padding: 0.2rem 0.7rem;
     border-radius: 40px;
     display: inline-block;
     margin-left: 12px;
+    border: 1px solid #3e6eff30;
+    text-shadow: 0 0 10px rgba(136, 170, 255, 0.4);
+    letter-spacing: 2px;
 }
 
 .timezone-bar {
@@ -107,8 +121,10 @@ body {
     background: #11162e;
     padding: 6px 18px;
     border-radius: 40px;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     border-left: 3px solid #3e6eff;
+    font-weight: 500;
+    letter-spacing: 0.5px;
 }
 
 .refresh-note {
@@ -128,12 +144,14 @@ button {
     background: none;
     border: 1px solid #4a6eff;
     color: #ccddff;
-    padding: 6px 14px;
+    padding: 8px 16px;
     border-radius: 40px;
     margin-top: 16px;
     cursor: pointer;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     transition: 0.2s;
+    font-weight: 500;
+    letter-spacing: 0.5px;
 }
 
 button:hover {
