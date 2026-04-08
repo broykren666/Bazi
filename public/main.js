@@ -197,13 +197,17 @@
             shichenDetailElem.textContent = `${formatHour(currentShichen.start)} - ${formatHour(currentShichen.end)}`;
         }
         
-        // 更新已经时间（显示在时辰标签右侧）
+        // 更新已经时间和百分比（显示在时辰标签右侧）
         const elapsedElem = document.getElementById('progressElapsed');
+        const percentElem = document.getElementById('progressPercent');
         if (elapsedElem) {
             const elapsed = Math.floor(secondsFromStart);
             const elapsedMin = Math.floor(elapsed / 60);
             const elapsedSec = elapsed % 60;
             elapsedElem.textContent = `已进 ${elapsedMin}分${elapsedSec}秒`;
+        }
+        if (percentElem) {
+            percentElem.textContent = `${progressPercent}%`;
         }
     }
 

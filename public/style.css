@@ -133,8 +133,17 @@ body {
     color: #66aaff;
     font-family: 'JetBrains Mono', monospace;
     letter-spacing: 0.5px;
-    margin-left: auto;
     opacity: 0.8;
+    margin-left: auto;
+}
+
+.progress-percent {
+    font-size: 0.85rem;
+    color: #88ccff;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-left: 0.5rem;
 }
 
 /* 进度条轨道 */
