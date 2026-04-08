@@ -877,13 +877,27 @@ body {
 
 /* 结果待计算信息 */
 .result-input-info {
-    text-align: center;
-    font-size: 0.85rem;
-    color: #88aacc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
     margin-bottom: 1rem;
-    padding: 0.5rem;
+    padding: 0.6rem;
     background: rgba(15, 25, 40, 0.4);
     border-radius: 10px;
+    text-align: center;
+}
+
+.info-main {
+    font-size: 0.9rem;
+    color: #88ccff;
+    font-weight: 600;
+}
+
+.info-sub {
+    font-size: 0.8rem;
+    color: #6688bb;
+    opacity: 0.8;
 }
 
 /* 类型选择 */

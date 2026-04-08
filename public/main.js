@@ -567,6 +567,10 @@
                     const resp = await fetchWithTimeout(`/api/lunar?year=${solarYear}&month=${solarMonth}&day=${solarDay}&hour=${hour}`);
                     const data = await resp.json();
                     if (data.success && data.bazi) {
+                        // 附加转换后的公历信息（如果是从农历模式来的）
+                        if (baziSelectedType === 'lunar') {
+                            data.convertedSolar = { year: solarYear, month: solarMonth, day: solarDay };
+                        }
                         baziResultCache[cacheKey] = data;
                         displayBaziResult(data, year, month, day, shichenIdx);
                     } else {
@@ -607,9 +611,26 @@
                 wuxingEl.innerHTML = wxHtml;
             }
 
-            const typeLabel = baziSelectedType === 'solar' ? '公历' : '农历';
-            document.getElementById('baziResultInfo').textContent =
-                `${typeLabel}：${year}年${month}月${day}日 ${shichenNames[shichenIdx]}`;
+            // 更新结果信息行：公历/农历对照显示
+            const timeStr = shichenNames[shichenIdx];
+            const infoEl = document.getElementById('baziResultInfo');
+            
+            if (baziSelectedType === 'solar') {
+                // 公历模式：显示公历输入 + 对应农历
+                const lunarStr = data.lunarStr || '';
+                infoEl.innerHTML = `
+                    <div class="info-main">公历：${year}年${month}月${day}日 ${timeStr}</div>
+                    <div class="info-sub">农历：${lunarStr}</div>
+                `;
+            } else {
+                // 农历模式：显示农历输入 + 对应公历
+                const solar = data.convertedSolar;
+                const solarStr = solar ? `${solar.year}年${solar.month}月${solar.day}日` : '';
+                infoEl.innerHTML = `
+                    <div class="info-main">农历：${year}年${month}月${day}日 ${timeStr}</div>
+                    <div class="info-sub">公历：${solarStr}</div>
+                `;
+            }
 
             showStep(stepResult);
         }
