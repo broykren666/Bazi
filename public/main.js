@@ -8,21 +8,38 @@
     function fetchServerTime() {
         const requestStart = performance.now();
         return fetch('/api/time')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
             .then(data => {
                 const requestEnd = performance.now();
-                const serverTimeRecv = data.utcTimeMs;
                 const rtt = requestEnd - requestStart;
+                const serverTimeRecv = Number(data.utcTimeMs);
+                
+                console.log(`[时间同步] RTT: ${rtt.toFixed(2)}ms, 服务器时间: ${data.utcTimeMs}`);
+                
+                if (!serverTimeRecv || isNaN(serverTimeRecv)) {
+                    throw new Error('服务器返回的时间戳无效');
+                }
+                
                 const estimatedServerTimeAtReceive = serverTimeRecv + (rtt / 2);
-                const localNow = performance.now();
+                const localNow = Date.now(); // 使用 Date.now() 而不是 performance.now()
                 offset = estimatedServerTimeAtReceive - localNow;
-                utcBaseTime = data.utcTimeMs;
+                utcBaseTime = serverTimeRecv;
                 clientFetchTime = Date.now();
-                console.log(`时间同步完成 | 偏移: ${offset.toFixed(2)}ms | RTT: ${rtt.toFixed(2)}ms`);
+                
+                console.log(`[时间同步] 偏移: ${offset.toFixed(2)}ms | 服务器: ${data.serverISO || '--'}`);
+                
+                // 高延迟警告
+                if (rtt > 500) {
+                    console.warn(`[时间同步] ⚠️ 网络延迟较高 (${rtt.toFixed(0)}ms)，时间精度可能受影响`);
+                }
+                
                 return true;
             })
             .catch(err => {
-                console.error("同步失败，使用本地时间偏移:", err);
+                console.error("[时间同步] ❌ 失败，使用本地时间:", err.message);
                 offset = 0;
                 return false;
             });
@@ -30,10 +47,10 @@
 
     // 获取当前的真实UTC时间，并转换为本地时区Date对象
     function getCurrentAccurateTime() {
-        const nowLocal = performance.now();
+        const localNow = Date.now(); // 使用 Date.now() 与 offset 计算一致
         let realTimestamp;
         if (offset !== null && !isNaN(offset)) {
-            realTimestamp = nowLocal + offset;
+            realTimestamp = localNow + offset;
         } else {
             realTimestamp = Date.now();
         }

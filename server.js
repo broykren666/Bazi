@@ -150,6 +150,8 @@ const server = http.createServer((req, res) => {
         const day = parseInt(parsedUrl.query.day);
         const hour = parseInt(parsedUrl.query.hour) || 0;
 
+        console.log(`[八字API] 请求: year=${year}, month=${month}, day=${day}, hour=${hour}`);
+
         if (!isValidDateRange(year, month, day)) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ success: false, error: '日期超出有效范围（1900-2100年）' }));
@@ -249,7 +251,7 @@ const server = http.createServer((req, res) => {
                 } catch (e) {}
             }
             if (maxDay === 0) maxDay = 30; // 兜底
-            
+
             if (day > maxDay) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ success: false, error: `农历${year}年${month}月只有${maxDay}天` }));
