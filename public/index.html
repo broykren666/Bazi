@@ -37,6 +37,7 @@
                 </div>
                 <div class="lunar-shichen-row">
                     <div class="lunar-box" id="lunarDisplay">加载农历...</div>
+                    <div class="jieqi-box" id="jieqiDisplay" style="display: none;"></div>
                 </div>
                 <div class="bazi-row">
                     <div class="bazi-item">
@@ -163,19 +164,19 @@
 
                     <!-- 第二行：生辰八字结果 -->
                     <div class="result-bazi" id="baziResultDisplay">
-                        <div class="result-pillar">
+                        <div class="result-pillar loading">
                             <span class="pillar-label">年柱</span>
                             <span class="pillar-value" id="baziResultYear">--</span>
                         </div>
-                        <div class="result-pillar">
+                        <div class="result-pillar loading">
                             <span class="pillar-label">月柱</span>
                             <span class="pillar-value" id="baziResultMonth">--</span>
                         </div>
-                        <div class="result-pillar">
+                        <div class="result-pillar loading">
                             <span class="pillar-label">日柱</span>
                             <span class="pillar-value" id="baziResultDay">--</span>
                         </div>
-                        <div class="result-pillar">
+                        <div class="result-pillar loading">
                             <span class="pillar-label">时柱</span>
                             <span class="pillar-value" id="baziResultTime">--</span>
                         </div>
@@ -186,6 +187,10 @@
                         <div class="result-zodiac" id="baziResultZodiac">生肖：--</div>
                         <div class="result-wuxing" id="baziResultWuxing"></div>
                     </div>
+                    
+                    <!-- 八字解析 -->
+                    <div class="result-analysis" id="baziResultAnalysis" style="display: none;"></div>
+                    
                     <div class="error-msg" id="baziResultError"></div>
 
                     <!-- 最下方：复制和重新计算 -->

@@ -178,11 +178,35 @@ const server = http.createServer((req, res) => {
 
             const bazi = calculateBazi(year, month, day, hour);
 
+            // 计算节气（简化版：基于常见日期范围）
+            let jieqi = null;
+            const jieqiDates = {
+                1: ['小寒', 5, '大寒', 20],
+                2: ['立春', 4, '雨水', 19],
+                3: ['惊蛰', 6, '春分', 21],
+                4: ['清明', 5, '谷雨', 20],
+                5: ['立夏', 6, '小满', 21],
+                6: ['芒种', 6, '夏至', 21],
+                7: ['小暑', 7, '大暑', 23],
+                8: ['立秋', 8, '处暑', 23],
+                9: ['白露', 8, '秋分', 23],
+                10: ['寒露', 8, '霜降', 23],
+                11: ['立冬', 7, '小雪', 22],
+                12: ['大雪', 7, '冬至', 22]
+            };
+            
+            if (jieqiDates[month]) {
+                const [jieqi1Name, jieqi1Day, jieqi2Name, jieqi2Day] = jieqiDates[month];
+                if (Math.abs(day - jieqi1Day) <= 1) jieqi = jieqi1Name;
+                else if (Math.abs(day - jieqi2Day) <= 1) jieqi = jieqi2Name;
+            }
+
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: true,
                 lunarStr,
-                bazi
+                bazi,
+                jieqi
             }));
         } catch (err) {
             console.error('农历计算错误:', err);

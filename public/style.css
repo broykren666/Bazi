@@ -647,20 +647,34 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(8px);
     z-index: 1000;
     display: none;
     justify-content: center;
     align-items: center;
     padding: 20px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
 }
 
 .modal-overlay.show {
     display: flex;
+    animation: overlayFadeIn 0.3s ease;
 }
 
+@keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-overlay:hover {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+/* 弹窗内容禁止冒泡 */
 .modal-content {
+    cursor: default;
     background: rgba(15, 20, 45, 0.98);
     border: 1px solid rgba(100, 150, 255, 0.3);
     border-radius: 24px;
@@ -813,6 +827,75 @@ body {
 .input-row:nth-child(2) .bazi-input { width: 58px; }
 .input-row:nth-child(3) .bazi-input { width: 58px; }
 .input-row:nth-child(4) .bazi-input { width: 125px; }
+
+/* 节气显示 */
+.jieqi-box {
+    font-size: 0.85rem;
+    color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+    padding: 0.25rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+/* 八字解析 */
+.result-analysis {
+    margin-bottom: 0.8rem;
+    padding: 0.8rem;
+    background: rgba(255, 170, 85, 0.08);
+    border: 1px solid rgba(255, 170, 85, 0.2);
+    border-radius: 12px;
+}
+
+.analysis-title {
+    font-size: 0.8rem;
+    color: #ffaa55;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+}
+
+.analysis-content {
+    font-size: 0.78rem;
+    color: #aabbdd;
+    line-height: 1.6;
+}
+
+.analysis-content .disclaimer {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.65rem;
+    color: #6688bb;
+    opacity: 0.7;
+}
+
+/* 加载骨架屏 */
+.result-pillar.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.result-pillar.loading .pillar-label,
+.result-pillar.loading .pillar-value {
+    opacity: 0;
+}
+
+.result-pillar.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(100, 150, 255, 0.1), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    100% { left: 100%; }
+}
 
 /* 下拉选择 */
 .bazi-select {
@@ -1210,6 +1293,23 @@ body {
     .bazi-action-row .quick-btn {
         padding: 0.75rem;
         font-size: 0.85rem;
+    }
+
+    .jieqi-box {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    .result-analysis {
+        padding: 0.6rem;
+    }
+
+    .analysis-title {
+        font-size: 0.75rem;
+    }
+
+    .analysis-content {
+        font-size: 0.72rem;
     }
 }
 .clock-footer {

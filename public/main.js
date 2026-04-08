@@ -302,11 +302,84 @@
         const monthElem = document.getElementById('baziMonth');
         const dayElem = document.getElementById('baziDay');
         const timeElem = document.getElementById('baziTime');
-        
+
         if (yearElem) yearElem.textContent = bazi.year;
         if (monthElem) monthElem.textContent = bazi.month;
         if (dayElem) dayElem.textContent = bazi.day;
         if (timeElem) timeElem.textContent = bazi.time;
+    }
+
+    // 八字解析
+    function generateBaziAnalysis(bazi) {
+        if (!bazi || !bazi.wuxing) return '';
+        const wx = bazi.wuxing;
+        const parts = [];
+
+        // 统计
+        const total = wx['金'] + wx['木'] + wx['水'] + wx['火'] + wx['土'];
+        const maxWx = Object.entries(wx).sort((a, b) => b[1] - a[1]);
+        const minWx = Object.entries(wx).sort((a, b) => a[1] - b[1]);
+
+        // 最旺/最弱
+        if (maxWx[0][1] >= 3) {
+            parts.push(`${maxWx[0][0]}较旺`);
+        }
+        if (minWx[0][1] === 0) {
+            parts.push(`缺${minWx[0][0]}`);
+        } else if (minWx[0][1] === 1) {
+            parts.push(`${minWx[0][0]}偏弱`);
+        }
+
+        // 五行齐全
+        const allPresent = Object.values(wx).every(v => v > 0);
+        if (allPresent) {
+            parts.push('五行齐全');
+        }
+
+        if (parts.length === 0) return '';
+
+        return `<div class="analysis-title">📊 五行简析</div>
+                <div class="analysis-content">
+                    ${parts.join('，')}。
+                    <span class="disclaimer">⚠️ 仅供娱乐参考，不具备科学依据。</span>
+                </div>`;
+    }
+
+    // 节气显示
+    let cachedJieqi = null;
+    async function updateJieqiDisplay(date) {
+        const jieqiElem = document.getElementById('jieqiDisplay');
+        if (!jieqiElem) return;
+
+        const todayStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+        if (cachedJieqi && cachedJieqi.date === todayStr) {
+            if (cachedJieqi.name) {
+                jieqiElem.textContent = cachedJieqi.name;
+                jieqiElem.style.display = 'inline-block';
+            } else {
+                jieqiElem.style.display = 'none';
+            }
+            return;
+        }
+
+        try {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const resp = await fetch(`/api/lunar?year=${year}&month=${month}&day=${day}&hour=${date.getHours()}`);
+            const data = await resp.json();
+            
+            if (data.success && data.jieqi) {
+                cachedJieqi = { date: todayStr, name: data.jieqi };
+                jieqiElem.textContent = data.jieqi;
+                jieqiElem.style.display = 'inline-block';
+            } else {
+                cachedJieqi = { date: todayStr, name: null };
+                jieqiElem.style.display = 'none';
+            }
+        } catch (err) {
+            jieqiElem.style.display = 'none';
+        }
     }
 
     // 更新农历显示（异步，仅在日期变化时请求）
@@ -443,9 +516,6 @@
         }
 
         closeBtn.addEventListener('click', closeModal);
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) closeModal();
-        });
 
         // 单选切换
         document.querySelectorAll('.type-label').forEach(radio => {
@@ -591,6 +661,11 @@
             if (!bazi) return;
             baziLastResult = bazi;
 
+            // 移除加载状态
+            document.querySelectorAll('.result-pillar').forEach(el => {
+                el.classList.remove('loading');
+            });
+
             document.getElementById('baziResultYear').textContent = bazi.year;
             document.getElementById('baziResultMonth').textContent = bazi.month;
             document.getElementById('baziResultDay').textContent = bazi.day;
@@ -611,19 +686,27 @@
                 wuxingEl.innerHTML = wxHtml;
             }
 
+            // 八字解析
+            const analysisEl = document.getElementById('baziResultAnalysis');
+            const analysisHtml = generateBaziAnalysis(bazi);
+            if (analysisHtml) {
+                analysisEl.innerHTML = analysisHtml;
+                analysisEl.style.display = 'block';
+            } else {
+                analysisEl.style.display = 'none';
+            }
+
             // 更新结果信息行：公历/农历对照显示
             const timeStr = shichenNames[shichenIdx];
             const infoEl = document.getElementById('baziResultInfo');
             
             if (baziSelectedType === 'solar') {
-                // 公历模式：显示公历输入 + 对应农历
                 const lunarStr = data.lunarStr || '';
                 infoEl.innerHTML = `
                     <div class="info-main">公历：${year}年${month}月${day}日 ${timeStr}</div>
                     <div class="info-sub">农历：${lunarStr}</div>
                 `;
             } else {
-                // 农历模式：显示农历输入 + 对应公历
                 const solar = data.convertedSolar;
                 const solarStr = solar ? `${solar.year}年${solar.month}月${solar.day}日` : '';
                 infoEl.innerHTML = `
@@ -663,6 +746,24 @@
         });
     }
 
+    // 全局错误边界
+    let isNetworkOffline = false;
+    window.addEventListener('error', (e) => {
+        if (e.message && e.message.includes('fetch')) {
+            console.warn('网络请求失败:', e.message);
+        }
+    });
+
+    window.addEventListener('online', () => {
+        isNetworkOffline = false;
+        console.log('🌐 网络已恢复');
+    });
+
+    window.addEventListener('offline', () => {
+        isNetworkOffline = true;
+        console.warn('⚠️ 网络已断开，将使用本地时间');
+    });
+
     // 初次启动
     updateTimezoneDisplay();
     initKeLabels();
@@ -670,6 +771,7 @@
     fetchServerTime().then(() => {
         const initialDate = getCurrentAccurateTime();
         updateLunarDisplay(initialDate);
+        updateJieqiDisplay(initialDate);
         updateShichenDisplay(initialDate);
         updateClock();
     }).catch(() => {
