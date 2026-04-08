@@ -65,6 +65,56 @@
         }
     }
 
+    // 根据小时获取对应时辰
+    function getChineseTimePeriod(hours) {
+        // 十二时辰对照表
+        const shichen = [
+            { name: '子时', start: 23, end: 1, emoji: '🌙' },
+            { name: '丑时', start: 1, end: 3, emoji: '🐂' },
+            { name: '寅时', start: 3, end: 5, emoji: '🐅' },
+            { name: '卯时', start: 5, end: 7, emoji: '🐇' },
+            { name: '辰时', start: 7, end: 9, emoji: '🐉' },
+            { name: '巳时', start: 9, end: 11, emoji: '🐍' },
+            { name: '午时', start: 11, end: 13, emoji: '☀️' },
+            { name: '未时', start: 13, end: 15, emoji: '🐑' },
+            { name: '申时', start: 15, end: 17, emoji: '🐒' },
+            { name: '酉时', start: 17, end: 19, emoji: '🐓' },
+            { name: '戌时', start: 19, end: 21, emoji: '🐕' },
+            { name: '亥时', start: 21, end: 23, emoji: '🐖' }
+        ];
+
+        for (let sc of shichen) {
+            if (sc.start < sc.end) {
+                // 正常跨小时（如 1-3点）
+                if (hours >= sc.start && hours < sc.end) {
+                    return sc;
+                }
+            } else {
+                // 跨夜（如 23-1点）
+                if (hours >= sc.start || hours < sc.end) {
+                    return sc;
+                }
+            }
+        }
+        return shichen[0]; // 默认子时
+    }
+
+    // 更新时辰显示
+    let lastShichen = '';
+    function updateShichenDisplay(date) {
+        const hours = date.getHours();
+        const shichen = getChineseTimePeriod(hours);
+        const shichenKey = shichen.name;
+
+        if (shichenKey !== lastShichen) {
+            lastShichen = shichenKey;
+            const shichenElem = document.getElementById('shichenDisplay');
+            if (shichenElem) {
+                shichenElem.innerHTML = `${shichen.emoji} ${shichen.name} (${shichen.start}:00 - ${shichen.end}:00)`;
+            }
+        }
+    }
+
     // 获取农历日期（通过API从服务器获取）
     let cachedLunar = {};
     let lastLunarDate = '';
@@ -141,6 +191,8 @@
             // 同时更新时区显示
             updateTimezoneDisplay();
         }
+        // 更新时辰显示
+        updateShichenDisplay(now);
         if (timeElem && timeStr !== lastTimeStr) {
             timeElem.innerText = timeStr;
             lastTimeStr = timeStr;
@@ -187,11 +239,13 @@
     fetchServerTime().then(() => {
         const initialDate = getCurrentAccurateTime();
         updateLunarDisplay(initialDate);
+        updateShichenDisplay(initialDate);
         updateClock();
     }).catch(() => {
         offset = 0;
         const initialDate = getCurrentAccurateTime();
         updateLunarDisplay(initialDate);
+        updateShichenDisplay(initialDate);
         updateClock();
     });
 
