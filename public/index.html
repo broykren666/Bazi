@@ -98,33 +98,37 @@
                 <span class="modal-close" id="baziModalClose">✕</span>
             </div>
             <div class="modal-body">
-                <!-- 步骤1：选择日期类型 -->
-                <div class="bazi-step" id="baziStepType">
-                    <div class="step-desc">请选择日期类型</div>
-                    <div class="type-options">
-                        <button class="type-btn active" data-type="solar" id="baziSolarBtn">☀️ 公历</button>
-                        <button class="type-btn" data-type="lunar" id="baziLunarBtn">🌙 农历</button>
+                <!-- 输入步骤 -->
+                <div class="bazi-step show" id="baziStepInput">
+                    <!-- 第一行：公历/农历单选标签 -->
+                    <div class="bazi-type-row">
+                        <label class="type-label active" data-type="solar">
+                            <input type="radio" name="baziType" value="solar" checked>
+                            <span>☀️ 公历</span>
+                        </label>
+                        <label class="type-label" data-type="lunar">
+                            <input type="radio" name="baziType" value="lunar">
+                            <span>🌙 农历</span>
+                        </label>
                     </div>
-                </div>
-                
-                <!-- 步骤2：输入日期时间 -->
-                <div class="bazi-step" id="baziStepInput">
+
+                    <!-- 第二行：年月日输入框和时辰下拉 -->
                     <div class="input-group">
                         <div class="input-row">
                             <label>年</label>
-                            <input type="number" id="baziInputYear" min="1900" max="2100" value="2026" class="bazi-input">
+                            <input type="number" id="baziInputYear" min="1900" max="2100" value="2026" class="bazi-input bazi-input-year">
                         </div>
                         <div class="input-row">
                             <label>月</label>
-                            <input type="number" id="baziInputMonth" min="1" max="12" value="1" class="bazi-input">
+                            <input type="number" id="baziInputMonth" min="1" max="12" value="1" class="bazi-input bazi-input-month">
                         </div>
                         <div class="input-row">
                             <label>日</label>
-                            <input type="number" id="baziInputDay" min="1" max="31" value="1" class="bazi-input">
+                            <input type="number" id="baziInputDay" min="1" max="31" value="1" class="bazi-input bazi-input-day">
                         </div>
                         <div class="input-row">
                             <label>时辰</label>
-                            <select id="baziInputShichen" class="bazi-input bazi-select">
+                            <select id="baziInputShichen" class="bazi-input bazi-select bazi-input-shichen">
                                 <option value="0">子时 23-01</option>
                                 <option value="1">丑时 01-03</option>
                                 <option value="2">寅时 03-05</option>
@@ -140,16 +144,24 @@
                             </select>
                         </div>
                     </div>
-                    <div class="input-hint" id="baziInputHint">公历：2026年1月1日 午时</div>
+
+                    <!-- 第三行：所选结果预览 -->
+                    <div class="input-preview" id="baziInputPreview">公历：2026年1月1日 午时</div>
                     <div class="error-msg" id="baziInputError"></div>
+
+                    <!-- 最下方：此刻和开始计算按钮 -->
                     <div class="bazi-action-row">
                         <button class="quick-btn" id="baziNowBtn">⏰ 此刻</button>
                         <button class="calc-btn" id="baziCalcSubmit">开始计算</button>
                     </div>
                 </div>
-                
-                <!-- 步骤3：显示结果 -->
+
+                <!-- 结果步骤 -->
                 <div class="bazi-step" id="baziStepResult">
+                    <!-- 第一行：待计算的数据 -->
+                    <div class="result-input-info" id="baziResultInfo">公历：2026年1月1日 午时</div>
+
+                    <!-- 第二行：生辰八字结果 -->
                     <div class="result-bazi" id="baziResultDisplay">
                         <div class="result-pillar">
                             <span class="pillar-label">年柱</span>
@@ -168,14 +180,17 @@
                             <span class="pillar-value" id="baziResultTime">--</span>
                         </div>
                     </div>
+
+                    <!-- 第三行：生肖和五行 -->
                     <div class="result-extra" id="baziResultExtra">
                         <div class="result-zodiac" id="baziResultZodiac">生肖：--</div>
                         <div class="result-wuxing" id="baziResultWuxing"></div>
                     </div>
-                    <div class="result-info" id="baziResultInfo"></div>
                     <div class="error-msg" id="baziResultError"></div>
-                    <div class="result-actions">
-                        <button class="calc-btn" id="baziCopyBtn">📋 复制八字</button>
+
+                    <!-- 最下方：复制和重新计算 -->
+                    <div class="bazi-action-row">
+                        <button class="calc-btn" id="baziCopyBtn">📋 复制</button>
                         <button class="calc-btn secondary" id="baziCalcReset">重新计算</button>
                     </div>
                 </div>

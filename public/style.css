@@ -734,40 +734,85 @@ body {
     letter-spacing: 1px;
 }
 
-/* 快捷按钮 */
-.quick-btn {
-    padding: 0.4rem 0.8rem;
-    background: rgba(62, 110, 255, 0.1);
-    border: 1px solid rgba(100, 150, 255, 0.25);
-    border-radius: 12px;
-    color: #88ccff;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-
-.quick-btn:hover {
-    background: rgba(62, 110, 255, 0.2);
-    border-color: rgba(136, 204, 255, 0.4);
-}
-
-.bazi-action-row {
+/* 公历/农历单选行 - 占满整行标签样式 */
+.bazi-type-row {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.type-label {
+    display: flex;
     align-items: center;
-}
-
-.bazi-action-row .quick-btn {
-    flex-shrink: 0;
-    padding: 0.8rem 1rem;
-    font-size: 0.9rem;
-}
-
-.bazi-action-row .calc-btn {
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.7rem;
+    background: rgba(15, 25, 40, 0.5);
+    border: 2px solid rgba(100, 150, 255, 0.2);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    user-select: none;
     flex: 1;
-    margin: 0;
 }
+
+.type-label input {
+    display: none;
+}
+
+.type-label span {
+    font-size: 0.95rem;
+    color: #8899bb;
+    font-weight: 500;
+    transition: color 0.25s;
+    letter-spacing: 0.5px;
+}
+
+.type-label:hover {
+    border-color: rgba(100, 150, 255, 0.4);
+    background: rgba(20, 30, 50, 0.6);
+}
+
+.type-label.active {
+    border-color: rgba(100, 150, 255, 0.6);
+    background: rgba(62, 110, 255, 0.2);
+    box-shadow: 0 0 20px rgba(62, 110, 255, 0.15);
+}
+
+.type-label.active span {
+    color: #aaddff;
+}
+
+/* 输入预览 */
+.input-preview {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #88aacc;
+    margin-bottom: 0.8rem;
+    min-height: 1.4rem;
+    letter-spacing: 0.5px;
+}
+
+/* 输入框 */
+.input-group {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.input-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.input-row:nth-child(1) .bazi-input { width: 80px; }
+.input-row:nth-child(2) .bazi-input { width: 58px; }
+.input-row:nth-child(3) .bazi-input { width: 58px; }
+.input-row:nth-child(4) .bazi-input { width: 125px; }
 
 /* 下拉选择 */
 .bazi-select {
@@ -775,6 +820,70 @@ body {
     cursor: pointer;
     padding-right: 0.4rem;
     font-size: 0.85rem;
+}
+
+/* 按钮统一样式 */
+.bazi-action-row {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    margin-top: 0.8rem;
+}
+
+.bazi-action-row .calc-btn,
+.bazi-action-row .quick-btn {
+    flex: 1;
+    padding: 0.85rem;
+    background: linear-gradient(135deg, #3e6eff 0%, #2a4acc 100%);
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.bazi-action-row .calc-btn:hover,
+.bazi-action-row .quick-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(62, 110, 255, 0.4);
+}
+
+.bazi-action-row .calc-btn.secondary,
+.bazi-action-row .quick-btn.secondary {
+    background: rgba(15, 25, 40, 0.6);
+    border: 1px solid rgba(100, 150, 255, 0.3);
+    color: #88ccff;
+}
+
+.bazi-action-row .calc-btn.secondary:hover,
+.bazi-action-row .quick-btn.secondary:hover {
+    background: rgba(20, 35, 60, 0.8);
+    border-color: rgba(136, 204, 255, 0.5);
+    box-shadow: 0 4px 15px rgba(62, 110, 255, 0.2);
+}
+
+.bazi-action-row .calc-btn:disabled,
+.bazi-action-row .quick-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 结果待计算信息 */
+.result-input-info {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #88aacc;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: rgba(15, 25, 40, 0.4);
+    border-radius: 10px;
 }
 
 /* 类型选择 */
@@ -1029,40 +1138,64 @@ body {
         max-width: 100%;
         border-radius: 20px;
     }
-    
+
     .modal-body {
-        padding: 1.2rem;
+        padding: 1.2rem 1rem;
     }
-    
+
+    .bazi-type-row {
+        gap: 0.5rem;
+    }
+
+    .type-label {
+        padding: 0.6rem;
+    }
+
+    .type-label span {
+        font-size: 0.85rem;
+    }
+
     .input-group {
-        gap: 0.6rem;
+        gap: 0.5rem;
     }
-    
-    .bazi-input {
+
+    .input-row:nth-child(1) .bazi-input { width: 70px; }
+    .input-row:nth-child(2) .bazi-input { width: 52px; }
+    .input-row:nth-child(3) .bazi-input { width: 52px; }
+    .input-row:nth-child(4) .bazi-input { width: 110px; }
+
+    .bazi-input, .bazi-select {
         padding: 0.5rem 0.3rem;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
-    
+
     .bazi-select {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
     }
-    
+
     .result-bazi {
-        gap: 0.8rem;
+        gap: 0.6rem;
         padding: 0.8rem;
     }
-    
+
     .pillar-value {
         font-size: 1.1rem;
         letter-spacing: 2px;
     }
-    
+
     .result-wuxing {
         gap: 0.5rem;
     }
-    
-    .result-actions {
-        flex-direction: column;
+
+    .bazi-action-row {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+
+    .bazi-action-row .calc-btn,
+    .bazi-action-row .quick-btn {
+        padding: 0.75rem;
+        font-size: 0.85rem;
     }
 }
 .clock-footer {
