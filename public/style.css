@@ -596,33 +596,161 @@ button:disabled {
     cursor: not-allowed;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 640px) {
+    body {
+        padding: 10px;
+        align-items: flex-start;
+    }
+    
     .clock-container {
         flex-direction: column;
-        padding: 1.5rem;
-        gap: 1.5rem;
+        padding: 1.2rem 1rem;
+        gap: 1rem;
+        border-radius: 32px;
+        max-width: 100%;
     }
+    
+    .clock-left {
+        gap: 1rem;
+    }
+    
     .clock-right {
         width: 100%;
     }
-    .time-wrapper {
-        flex-direction: row;
-        flex-wrap: wrap;
+    
+    /* 区块优化 */
+    .block {
+        padding: 1rem;
+        border-radius: 20px;
     }
-    .time-main {
-        font-size: 3rem;
-        letter-spacing: 4px;
+    
+    .block-header {
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.5rem;
     }
-    .milliseconds {
-        font-size: 1.3rem;
+    
+    .block-title {
+        font-size: 0.7rem;
     }
+    
+    /* 日期时间 */
     .date-box {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
+        padding: 0.4rem 1rem;
     }
+    
+    .time-wrapper {
+        justify-content: center;
+    }
+    
+    .time-main {
+        font-size: 3.5rem;
+        letter-spacing: 6px;
+    }
+    
+    .milliseconds {
+        font-size: 1.5rem;
+    }
+    
+    /* 农历 */
     .lunar-box {
         font-size: 0.9rem;
+        padding: 0.3rem 0.8rem;
     }
-    .shichen-box {
-        font-size: 0.85rem;
+    
+    /* 时辰进度条 */
+    .progress-header {
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+    
+    .progress-shichen-name {
+        font-size: 0.95rem;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .progress-shichen-detail {
+        font-size: 0.7rem;
+    }
+    
+    .progress-elapsed {
+        font-size: 0.7rem;
+        margin-left: 0;
+    }
+    
+    .progress-percent {
+        font-size: 0.75rem;
+    }
+    
+    .progress-track {
+        margin: 0;
+    }
+    
+    /* 刻数标签 - 手机端只显示当前刻 */
+    .progress-ke-labels {
+        justify-content: center;
+        padding: 0;
+    }
+    
+    .ke-label {
+        font-size: 0.6rem;
+    }
+    
+    .ke-label:not(.active) {
+        display: none;
+    }
+    
+    .ke-label.active {
+        width: 100%;
+    }
+    
+    .ke-label:not(:last-child)::after {
+        display: none;
+    }
+    
+    /* 时区信息 */
+    .timezone-bar {
+        gap: 0.5rem;
+        padding: 0.5rem;
+    }
+    
+    .info-chip {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+    
+    button {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .refresh-note {
+        font-size: 0.65rem;
+    }
+    
+    /* 右侧对照表 - 手机端改为横向滚动 */
+    .shichen-reference {
+        padding: 1rem 0.5rem;
+    }
+    
+    .reference-title {
+        font-size: 0.7rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .reference-content {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 0.5rem;
+    }
+    
+    .shichen-reference-table {
+        min-width: 280px;
+    }
+    
+    .shichen-reference-table td {
+        font-size: 0.68rem;
+        padding: 0.3rem 0.3rem;
     }
 }
