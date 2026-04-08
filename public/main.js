@@ -466,13 +466,37 @@
         });
 
         // 快捷按钮：此刻
-        nowBtn.addEventListener('click', () => {
+        nowBtn.addEventListener('click', async () => {
             const now = getCurrentAccurateTime();
-            document.getElementById('baziInputYear').value = now.getFullYear();
-            document.getElementById('baziInputMonth').value = now.getMonth() + 1;
-            document.getElementById('baziInputDay').value = now.getDate();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
             const shichenIdx = Math.floor(((now.getHours() + 1) % 24) / 2);
+            
             document.getElementById('baziInputShichen').value = shichenIdx;
+            
+            if (baziSelectedType === 'lunar') {
+                // 农历类型：获取当前农历日期
+                try {
+                    const resp = await fetch(`/api/lunar?year=${year}&month=${month}&day=${day}&hour=${now.getHours()}`);
+                    const data = await resp.json();
+                    if (data.success && data.bazi) {
+                        document.getElementById('baziInputYear').value = data.bazi.lunarYear;
+                        document.getElementById('baziInputMonth').value = data.bazi.lunarMonth;
+                        document.getElementById('baziInputDay').value = data.bazi.lunarDay;
+                        updateHint();
+                        hideErrors();
+                        return;
+                    }
+                } catch (err) {
+                    console.error('获取农历日期失败:', err);
+                }
+            }
+            
+            // 公历类型或获取失败时使用公历
+            document.getElementById('baziInputYear').value = year;
+            document.getElementById('baziInputMonth').value = month;
+            document.getElementById('baziInputDay').value = day;
             updateHint();
             hideErrors();
         });
