@@ -157,9 +157,9 @@ const server = http.createServer((req, res) => {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: true,
-                solarYear: solar.solarYear,
-                solarMonth: solar.solarMonth,
-                solarDay: solar.solarDay
+                solarYear: solar.year,
+                solarMonth: solar.month,
+                solarDay: solar.day
             }));
         } catch (err) {
             console.error('农历转公历错误:', err);
