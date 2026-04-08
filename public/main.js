@@ -397,7 +397,6 @@
         const submitBtn = document.getElementById('baziCalcSubmit');
         const resetBtn = document.getElementById('baziCalcReset');
         const copyBtn = document.getElementById('baziCopyBtn');
-        const todayBtn = document.getElementById('baziTodayBtn');
         const nowBtn = document.getElementById('baziNowBtn');
         const stepType = document.getElementById('baziStepType');
         const stepInput = document.getElementById('baziStepInput');
@@ -464,18 +463,6 @@
             solarBtn.classList.remove('active');
             showStep(stepInput);
             updateHint();
-        });
-
-        // 快捷按钮：今天
-        todayBtn.addEventListener('click', () => {
-            const now = new Date();
-            document.getElementById('baziInputYear').value = now.getFullYear();
-            document.getElementById('baziInputMonth').value = now.getMonth() + 1;
-            document.getElementById('baziInputDay').value = now.getDate();
-            const shichenIdx = Math.floor(((now.getHours() + 1) % 24) / 2);
-            document.getElementById('baziInputShichen').value = shichenIdx;
-            updateHint();
-            hideErrors();
         });
 
         // 快捷按钮：此刻

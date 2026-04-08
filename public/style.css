@@ -734,14 +734,7 @@ body {
     letter-spacing: 1px;
 }
 
-/* 快捷操作 */
-.quick-actions {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-    margin-bottom: 1rem;
-}
-
+/* 快捷按钮 */
 .quick-btn {
     padding: 0.4rem 0.8rem;
     background: rgba(62, 110, 255, 0.1);
