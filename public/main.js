@@ -223,7 +223,7 @@
         
         const totalShichenSeconds = 2 * 3600;
         const progress = Math.min(Math.max(secondsFromStart / totalShichenSeconds, 0), 1);
-        const progressPercent = Math.round(progress * 100);
+        const progressPercent = (progress * 100).toFixed(2);
         
         // 时辰变化时，更新刻数标签和对照表
         if (shichenIndex !== lastShichenIndex) {
