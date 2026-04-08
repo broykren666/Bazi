@@ -1,22 +1,22 @@
 (function() {
-    // 从服务器获取基准时间 (毫秒级时间戳 + 传输耗时校准)
-    let serverBaseTime = null;
+    // 从服务器获取基准UTC时间 (毫秒级时间戳 + 传输耗时校准)
+    let utcBaseTime = null;
     let clientFetchTime = null;
     let offset = 0;
 
-    // 获取精准服务器时间
+    // 获取精准UTC时间
     function fetchServerTime() {
         const requestStart = performance.now();
         return fetch('/api/time')
             .then(response => response.json())
             .then(data => {
                 const requestEnd = performance.now();
-                const serverTimeRecv = data.serverTimeMs;
+                const serverTimeRecv = data.utcTimeMs;
                 const rtt = requestEnd - requestStart;
                 const estimatedServerTimeAtReceive = serverTimeRecv + (rtt / 2);
                 const localNow = performance.now();
                 offset = estimatedServerTimeAtReceive - localNow;
-                serverBaseTime = data.serverTimeMs;
+                utcBaseTime = data.utcTimeMs;
                 clientFetchTime = Date.now();
                 console.log(`时间同步完成 | 偏移: ${offset.toFixed(2)}ms | RTT: ${rtt.toFixed(2)}ms`);
                 return true;
@@ -28,7 +28,7 @@
             });
     }
 
-    // 获取当前的真实时间
+    // 获取当前的真实UTC时间，并转换为本地时区Date对象
     function getCurrentAccurateTime() {
         const nowLocal = performance.now();
         let realTimestamp;
@@ -37,6 +37,7 @@
         } else {
             realTimestamp = Date.now();
         }
+        // 使用 UTC 时间戳创建 Date 对象，然后使用 toLocaleString 等方法按浏览器本地时区显示
         return new Date(realTimestamp);
     }
 
@@ -48,6 +49,20 @@
         const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
         const weekday = weekdays[date.getDay()];
         return `${year}年${month}月${day}日 ${weekday}`;
+    }
+
+    // 获取并显示浏览器时区信息
+    function updateTimezoneDisplay() {
+        const timezoneChip = document.getElementById('timezoneChip');
+        if (timezoneChip) {
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const offset = -new Date().getTimezoneOffset();
+            const offsetHours = Math.floor(Math.abs(offset) / 60);
+            const offsetMinutes = Math.abs(offset) % 60;
+            const sign = offset >= 0 ? '+' : '-';
+            const offsetStr = `UTC${sign}${offsetHours.toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
+            timezoneChip.innerHTML = `🌍 ${tz} (${offsetStr})`;
+        }
     }
 
     // 获取农历日期（通过API从服务器获取）
@@ -113,16 +128,18 @@
         const dateStr = formatDate(now);
         const timeStr = formatTime(now);
         const msStr = getMilliseconds(now);
-        
+
         const dateElem = document.getElementById('dateDisplay');
         const timeElem = document.getElementById('timeDisplay');
         const msElem = document.getElementById('msDisplay');
-        
+
         if (dateElem && dateStr !== lastDateStr) {
             dateElem.innerText = dateStr;
             lastDateStr = dateStr;
             // 日期变化时更新农历
             updateLunarDisplay(now);
+            // 同时更新时区显示
+            updateTimezoneDisplay();
         }
         if (timeElem && timeStr !== lastTimeStr) {
             timeElem.innerText = timeStr;
@@ -131,7 +148,7 @@
         if (msElem) {
             msElem.innerText = `.${msStr}`;
         }
-        
+
         animationId = requestAnimationFrame(updateClock);
     }
 
@@ -166,6 +183,7 @@
     }
 
     // 初次启动
+    updateTimezoneDisplay();
     fetchServerTime().then(() => {
         const initialDate = getCurrentAccurateTime();
         updateLunarDisplay(initialDate);

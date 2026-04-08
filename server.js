@@ -43,21 +43,21 @@ const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const pathname = parsedUrl.pathname;
 
-    // 处理API端点：提供准确的服务器时间
+    // 处理API端点：提供准确的UTC时间
     if (pathname === '/api/time') {
         const now = new Date();
-        res.writeHead(200, { 
+        res.writeHead(200, {
             'Content-Type': 'application/json',
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Access-Control-Allow-Origin': '*'
         });
         res.end(JSON.stringify({
-            serverTimeMs: now.getTime(),
+            utcTimeMs: now.getTime(),
             serverISO: now.toISOString()
         }));
         return;
     }
-    
+
     // 处理农历API端点
     if (pathname === '/api/lunar') {
         const year = parseInt(parsedUrl.query.year);
