@@ -95,6 +95,140 @@ body {
     text-shadow: 0 0 8px rgba(136, 255, 170, 0.2);
 }
 
+/* 时辰数轴样式 */
+.shichen-timeline {
+    margin: 1.5rem 0;
+    padding: 1.5rem 1.5rem 1.2rem;
+    background: rgba(15, 25, 40, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(100, 150, 255, 0.15);
+}
+
+/* 时辰名称行 */
+.timeline-names {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 0.5rem;
+    padding: 0 0.5rem;
+    min-height: 28px;
+}
+
+.timeline-name {
+    font-size: 0.7rem;
+    color: #6688bb;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    opacity: 0.7;
+    text-align: center;
+    transition: opacity 0.3s;
+}
+
+.timeline-name.active {
+    color: #88ccff;
+    opacity: 1;
+    font-weight: 600;
+}
+
+/* 数轴轨道 */
+.timeline-track {
+    position: relative;
+    height: 8px;
+    background: linear-gradient(90deg, #0f1a3a 0%, #1a3a6a 50%, #0f1a3a 100%);
+    border-radius: 4px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+    margin: 0 0.5rem;
+}
+
+/* 刻度标记 */
+.timeline-ticks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+/* 每个时辰内的8个刻度 */
+.timeline-ticks::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    height: 28px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent calc(100% / 96 - 0.5px),
+        rgba(136, 170, 255, 0.25) calc(100% / 96 - 0.5px),
+        rgba(136, 170, 255, 0.25) calc(100% / 96)
+    );
+}
+
+/* 时辰分隔线（每8个刻度一条更明显的线） */
+.timeline-ticks::after {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent calc(100% / 12 - 1px),
+        rgba(136, 170, 255, 0.5) calc(100% / 12 - 1px),
+        rgba(136, 170, 255, 0.5) calc(100% / 12)
+    );
+}
+
+/* 呼吸小点 */
+.timeline-dot {
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    background: radial-gradient(circle, #88ccff 0%, #3e6eff 100%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 20px rgba(62, 110, 255, 0.8), 0 0 40px rgba(62, 110, 255, 0.4);
+    animation: breathe 2s ease-in-out infinite;
+    transition: left 0.5s ease;
+    z-index: 10;
+}
+
+@keyframes breathe {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow: 0 0 20px rgba(62, 110, 255, 0.8), 0 0 40px rgba(62, 110, 255, 0.4);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.5);
+        box-shadow: 0 0 30px rgba(62, 110, 255, 1), 0 0 60px rgba(62, 110, 255, 0.6);
+    }
+}
+
+/* 时间标记行 */
+.timeline-time-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 0.5rem;
+    padding: 0 0.5rem;
+    min-height: 24px;
+}
+
+.timeline-time-label {
+    font-size: 0.7rem;
+    color: #5566aa;
+    letter-spacing: 0.5px;
+    font-weight: 400;
+    text-align: center;
+    opacity: 0.7;
+}
+
 .time-wrapper {
     display: flex;
     justify-content: center;
