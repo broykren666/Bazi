@@ -99,18 +99,42 @@
         return shichen[0]; // 默认子时
     }
 
+    // 计算当前时辰已过的刻数（每个时辰2小时=120分钟，分为8刻，每刻15分钟）
+    function getKe(minutes) {
+        const ke = Math.floor(minutes / 15);
+        if (ke === 0) return '初刻';
+        if (ke >= 8) return '正刻';
+        return `${ke}刻`;
+    }
+
     // 更新时辰显示
     let lastShichen = '';
     function updateShichenDisplay(date) {
         const hours = date.getHours();
+        const minutes = date.getMinutes();
         const shichen = getChineseTimePeriod(hours);
-        const shichenKey = shichen.name;
+        
+        // 计算在当前时辰中已过多少分钟
+        let minutesInShichen;
+        if (shichen.start > shichen.end) {
+            // 跨夜时辰（如子时 23:00-01:00）
+            if (hours >= shichen.start) {
+                minutesInShichen = (hours - shichen.start) * 60 + minutes;
+            } else {
+                minutesInShichen = (24 - shichen.start + hours) * 60 + minutes;
+            }
+        } else {
+            minutesInShichen = (hours - shichen.start) * 60 + minutes;
+        }
+        
+        const ke = getKe(minutesInShichen);
+        const shichenKey = `${shichen.name}${ke}`;
 
         if (shichenKey !== lastShichen) {
             lastShichen = shichenKey;
             const shichenElem = document.getElementById('shichenDisplay');
             if (shichenElem) {
-                shichenElem.innerHTML = `${shichen.emoji} ${shichen.name} (${shichen.start}:00 - ${shichen.end}:00)`;
+                shichenElem.innerHTML = `${shichen.emoji} ${shichen.name}${ke}`;
             }
         }
     }
