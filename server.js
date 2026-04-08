@@ -206,6 +206,32 @@ const server = http.createServer((req, res) => {
         }
 
         try {
+            // 农历月份天数校验：先尝试获取该农历月实际最大天数
+            let maxDay = 0;
+            // 尝试两种可能（非闰月和闰月）
+            for (let leap of [false, true]) {
+                try {
+                    const test = LunarCalendar.lunarToSolar(year, month, 1, { isLeapMonth: leap });
+                    if (test && test.year) {
+                        // 逐日测试找到最大有效日
+                        for (let d = 30; d >= 28; d--) {
+                            const t = LunarCalendar.lunarToSolar(year, month, d, { isLeapMonth: leap });
+                            if (t && t.year && t.month === test.month) {
+                                maxDay = Math.max(maxDay, d);
+                                break;
+                            }
+                        }
+                    }
+                } catch (e) {}
+            }
+            if (maxDay === 0) maxDay = 30; // 兜底
+            
+            if (day > maxDay) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: false, error: `农历${year}年${month}月只有${maxDay}天` }));
+                return;
+            }
+
             let solar;
             if (isLeap) {
                 solar = LunarCalendar.lunarToSolar(year, month, day, { isLeapMonth: true });
