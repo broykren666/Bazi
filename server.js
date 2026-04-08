@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
@@ -110,6 +111,7 @@ function calculateBazi(solarYear, solarMonth, solarDay, hour) {
 }
 
 const PORT = 3243;
+const REQUEST_TIMEOUT = 10000; // 10秒超时
 
 // 定义MIME类型
 const mimeTypes = {
@@ -128,8 +130,62 @@ const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const pathname = parsedUrl.pathname;
 
-    // 处理API端点：提供准确的UTC时间
+    // 处理API端点：提供准确的UTC时间（优先time.is，失败降级本地）
     if (pathname === '/api/time') {
+        // 缓存time.is结果（30秒内不重复请求）
+        if (server._cachedTimeIs && Date.now() - server._cachedTimeIs.ts < 30000) {
+            res.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Access-Control-Allow-Origin': '*'
+            });
+            res.end(JSON.stringify({
+                utcTimeMs: server._cachedTimeIs.ms,
+                serverISO: new Date(server._cachedTimeIs.ms).toISOString(),
+                source: 'time.is (cached)'
+            }));
+            return;
+        }
+
+        // 请求time.is API
+        const req = https.get('https://time.is/Unix_time', { timeout: 3000 }, (resTime) => {
+            let data = '';
+            resTime.on('data', chunk => { data += chunk; });
+            resTime.on('end', () => {
+                try {
+                    // time.is 返回纯文本Unix时间戳
+                    const unixTimeMs = parseInt(data.trim()) * 1000;
+                    if (!isNaN(unixTimeMs) && unixTimeMs > 1000000000000) {
+                        server._cachedTimeIs = { ms: unixTimeMs, ts: Date.now() };
+                        res.writeHead(200, {
+                            'Content-Type': 'application/json',
+                            'Cache-Control': 'no-cache, no-store, must-revalidate',
+                            'Access-Control-Allow-Origin': '*'
+                        });
+                        res.end(JSON.stringify({
+                            utcTimeMs: unixTimeMs,
+                            serverISO: new Date(unixTimeMs).toISOString(),
+                            source: 'time.is'
+                        }));
+                        return;
+                    }
+                } catch (e) {}
+                fallbackToLocal(res);
+            });
+        });
+
+        req.on('error', () => {
+            fallbackToLocal(res);
+        });
+
+        req.on('timeout', () => {
+            req.destroy();
+            fallbackToLocal(res);
+        });
+        return;
+    }
+
+    function fallbackToLocal(res) {
         const now = new Date();
         res.writeHead(200, {
             'Content-Type': 'application/json',
@@ -138,7 +194,8 @@ const server = http.createServer((req, res) => {
         });
         res.end(JSON.stringify({
             utcTimeMs: now.getTime(),
-            serverISO: now.toISOString()
+            serverISO: now.toISOString(),
+            source: 'local'
         }));
         return;
     }
@@ -320,6 +377,8 @@ const server = http.createServer((req, res) => {
     });
 });
 
+server._cachedTimeIs = null;
+server.setTimeout(REQUEST_TIMEOUT);
 server.listen(PORT, () => {
     console.log(`✅ 精准时钟服务已启动（含农历）→ http://localhost:${PORT}`);
     console.log(`📅 提供类似 time.is 的实时日期时间 + 农历显示`);

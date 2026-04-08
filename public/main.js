@@ -5,6 +5,9 @@
     let offset = 0;
 
     // 获取精准UTC时间
+    let lastTimeSource = '';
+    let timeSourceDisplay = 'local';
+
     function fetchServerTime() {
         const requestStart = performance.now();
         return fetch('/api/time')
@@ -16,31 +19,38 @@
                 const requestEnd = performance.now();
                 const rtt = requestEnd - requestStart;
                 const serverTimeRecv = Number(data.utcTimeMs);
-                
-                console.log(`[时间同步] RTT: ${rtt.toFixed(2)}ms, 服务器时间: ${data.utcTimeMs}`);
-                
+
                 if (!serverTimeRecv || isNaN(serverTimeRecv)) {
                     throw new Error('服务器返回的时间戳无效');
                 }
-                
+
                 const estimatedServerTimeAtReceive = serverTimeRecv + (rtt / 2);
-                const localNow = Date.now(); // 使用 Date.now() 而不是 performance.now()
+                const localNow = Date.now();
                 offset = estimatedServerTimeAtReceive - localNow;
                 utcBaseTime = serverTimeRecv;
                 clientFetchTime = Date.now();
-                
-                console.log(`[时间同步] 偏移: ${offset.toFixed(2)}ms | 服务器: ${data.serverISO || '--'}`);
-                
-                // 高延迟警告
+
+                // 记录时间来源
+                const source = data.source || 'local';
+                timeSourceDisplay = source;
+                if (source !== lastTimeSource) {
+                    lastTimeSource = source;
+                    const sourceLabel = source === 'time.is (cached)' ? '🕐 time.is (缓存)' :
+                                        source === 'time.is' ? '🕐 time.is' : '🖥️ 本地';
+                    console.log(`[时间同步] ✅ 来源: ${sourceLabel} | 偏移: ${offset.toFixed(2)}ms | RTT: ${rtt.toFixed(2)}ms`);
+                }
+
                 if (rtt > 500) {
                     console.warn(`[时间同步] ⚠️ 网络延迟较高 (${rtt.toFixed(0)}ms)，时间精度可能受影响`);
                 }
-                
+
                 return true;
             })
             .catch(err => {
                 console.error("[时间同步] ❌ 失败，使用本地时间:", err.message);
                 offset = 0;
+                lastTimeSource = 'local';
+                timeSourceDisplay = 'local';
                 return false;
             });
     }
