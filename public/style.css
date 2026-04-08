@@ -23,7 +23,7 @@ body {
     background: rgba(15, 20, 45, 0.8);
     backdrop-filter: blur(12px);
     border-radius: 48px;
-    padding: 2.5rem 3rem;
+    padding: 1.8rem 2rem;
     box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
     border: 1px solid rgba(90, 150, 255, 0.25);
     width: 100%;
@@ -184,30 +184,31 @@ body {
 }
 
 .date-box {
-    font-size: 2rem;
-    letter-spacing: 3px;
+    font-size: 1.6rem;
+    letter-spacing: 2px;
     font-weight: 500;
-    background: #01031a80;
-    padding: 0.5rem 1.2rem;
-    border-radius: 60px;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
     display: inline-block;
-    backdrop-filter: blur(4px);
+    backdrop-filter: none;
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    border: 1px solid #2c3f8f;
+    border: none;
     color: #a8c8ff;
     text-shadow: 0 0 12px rgba(100, 150, 255, 0.3);
+    margin-bottom: 0.5rem;
 }
 
 .lunar-box {
     font-size: 1.15rem;
     color: #ffd966;
-    background: #1a1f3a;
-    padding: 0.35rem 1.2rem;
-    border-radius: 40px;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
     display: inline-block;
     font-family: 'Inter', system-ui, 'Segoe UI', sans-serif;
     letter-spacing: 1.5px;
-    border: 1px solid #ffaa3340;
+    border: none;
     font-weight: 500;
     text-shadow: 0 0 8px rgba(255, 217, 102, 0.2);
 }
@@ -514,10 +515,10 @@ body {
 }
 
 .time-main {
-    font-size: 6.5rem;
+    font-size: 5rem;
     font-weight: 600;
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    letter-spacing: 10px;
+    letter-spacing: 6px;
     text-shadow: 
         0 0 15px rgba(62, 110, 255, 0.5),
         0 0 30px rgba(62, 110, 255, 0.3),
@@ -530,17 +531,17 @@ body {
 }
 
 .milliseconds {
-    font-size: 2.8rem;
+    font-size: 2rem;
     font-weight: 400;
     font-family: 'JetBrains Mono', monospace;
     color: #88aaff;
     background: #0a0e2a;
-    padding: 0.2rem 0.7rem;
+    padding: 0.15rem 0.6rem;
     border-radius: 40px;
     border: 1px solid #3e6eff30;
     text-shadow: 0 0 10px rgba(136, 170, 255, 0.4);
-    letter-spacing: 2px;
-    margin-left: 8px;
+    letter-spacing: 1px;
+    margin-left: 6px;
 }
 
 .timezone-info {
@@ -564,13 +565,16 @@ body {
 }
 
 .info-chip {
-    background: #11162e;
-    padding: 6px 18px;
-    border-radius: 40px;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
     font-family: 'Inter', monospace;
-    border-left: 3px solid #3e6eff;
+    border: none;
+    border-left: none;
     font-weight: 500;
     letter-spacing: 0.5px;
+    color: #88ccff;
+    font-size: 0.85rem;
 }
 
 /* 容器页脚 */
@@ -636,8 +640,9 @@ body {
     /* 日期时间 */
     .date-box {
         font-size: 0.85rem;
-        padding: 0.25rem 0.7rem;
+        padding: 0;
         letter-spacing: 1px;
+        margin-bottom: 0.3rem;
     }
     
     .time-wrapper {
@@ -657,7 +662,8 @@ body {
     /* 农历 */
     .lunar-box {
         font-size: 0.9rem;
-        padding: 0.3rem 0.8rem;
+        padding: 0;
+        margin-bottom: 0.5rem;
     }
     
     /* 时辰进度条 */
