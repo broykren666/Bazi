@@ -384,8 +384,10 @@
     }
 
     // 八字计算弹窗
-    let baziSelectedType = 'solar'; // 'solar' 或 'lunar'
-    
+    let baziSelectedType = 'solar';
+    let baziResultCache = {}; // 缓存计算结果
+    let baziLastResult = null;
+
     function initBaziModal() {
         const overlay = document.getElementById('baziModalOverlay');
         const calcBtn = document.getElementById('baziCalcBtn');
@@ -394,44 +396,60 @@
         const lunarBtn = document.getElementById('baziLunarBtn');
         const submitBtn = document.getElementById('baziCalcSubmit');
         const resetBtn = document.getElementById('baziCalcReset');
+        const copyBtn = document.getElementById('baziCopyBtn');
+        const todayBtn = document.getElementById('baziTodayBtn');
+        const nowBtn = document.getElementById('baziNowBtn');
         const stepType = document.getElementById('baziStepType');
         const stepInput = document.getElementById('baziStepInput');
         const stepResult = document.getElementById('baziStepResult');
         const hintEl = document.getElementById('baziInputHint');
-        
+        const errorEl = document.getElementById('baziInputError');
+        const resultErrorEl = document.getElementById('baziResultError');
+
         if (!overlay || !calcBtn) return;
-        
+
+        const shichenNames = ['子时', '丑时', '寅时', '卯时', '辰时', '巳时', '午时', '未时', '申时', '酉时', '戌时', '亥时'];
+
         function showStep(step) {
             [stepType, stepInput, stepResult].forEach(s => s.classList.remove('show'));
             step.classList.add('show');
+            hideErrors();
         }
-        
+
+        function hideErrors() {
+            if (errorEl) errorEl.classList.remove('show');
+            if (resultErrorEl) resultErrorEl.classList.remove('show');
+        }
+
+        function showError(el, msg) {
+            el.textContent = msg;
+            el.classList.add('show');
+        }
+
         function updateHint() {
             const y = document.getElementById('baziInputYear').value;
             const m = document.getElementById('baziInputMonth').value;
             const d = document.getElementById('baziInputDay').value;
-            const h = document.getElementById('baziInputHour').value;
+            const scIdx = parseInt(document.getElementById('baziInputShichen').value);
             const typeLabel = baziSelectedType === 'solar' ? '公历' : '农历';
-            hintEl.textContent = `${typeLabel}：${y}年${m}月${d}日 ${h}时`;
+            hintEl.textContent = `${typeLabel}：${y}年${m}月${d}日 ${shichenNames[scIdx]}`;
         }
-        
+
         // 打开弹窗
         calcBtn.addEventListener('click', () => {
             overlay.classList.add('show');
             showStep(stepType);
         });
-        
-        // 关闭弹窗
+
         function closeModal() {
             overlay.classList.remove('show');
         }
-        
+
         closeBtn.addEventListener('click', closeModal);
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) closeModal();
         });
-        
-        // 切换日期类型
+
         solarBtn.addEventListener('click', () => {
             baziSelectedType = 'solar';
             solarBtn.classList.add('active');
@@ -439,7 +457,7 @@
             showStep(stepInput);
             updateHint();
         });
-        
+
         lunarBtn.addEventListener('click', () => {
             baziSelectedType = 'lunar';
             lunarBtn.classList.add('active');
@@ -447,68 +465,180 @@
             showStep(stepInput);
             updateHint();
         });
-        
-        // 输入变化监听
-        ['baziInputYear', 'baziInputMonth', 'baziInputDay', 'baziInputHour'].forEach(id => {
+
+        // 快捷按钮：今天
+        todayBtn.addEventListener('click', () => {
+            const now = new Date();
+            document.getElementById('baziInputYear').value = now.getFullYear();
+            document.getElementById('baziInputMonth').value = now.getMonth() + 1;
+            document.getElementById('baziInputDay').value = now.getDate();
+            const shichenIdx = Math.floor(((now.getHours() + 1) % 24) / 2);
+            document.getElementById('baziInputShichen').value = shichenIdx;
+            updateHint();
+            hideErrors();
+        });
+
+        // 快捷按钮：此刻
+        nowBtn.addEventListener('click', () => {
+            const now = getCurrentAccurateTime();
+            document.getElementById('baziInputYear').value = now.getFullYear();
+            document.getElementById('baziInputMonth').value = now.getMonth() + 1;
+            document.getElementById('baziInputDay').value = now.getDate();
+            const shichenIdx = Math.floor(((now.getHours() + 1) % 24) / 2);
+            document.getElementById('baziInputShichen').value = shichenIdx;
+            updateHint();
+            hideErrors();
+        });
+
+        // 输入变化
+        ['baziInputYear', 'baziInputMonth', 'baziInputDay', 'baziInputShichen'].forEach(id => {
             document.getElementById(id).addEventListener('input', updateHint);
         });
-        
+
+        // 带超时的 fetch
+        async function fetchWithTimeout(url, timeout = 8000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(id);
+                return response;
+            } catch (err) {
+                clearTimeout(id);
+                throw err;
+            }
+        }
+
         // 提交计算
         submitBtn.addEventListener('click', async () => {
+            hideErrors();
             const year = parseInt(document.getElementById('baziInputYear').value);
             const month = parseInt(document.getElementById('baziInputMonth').value);
             const day = parseInt(document.getElementById('baziInputDay').value);
-            const hour = parseInt(document.getElementById('baziInputHour').value);
-            
-            if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hour)) {
-                alert('请填写完整信息');
+            const shichenIdx = parseInt(document.getElementById('baziInputShichen').value);
+            const hour = shichenIdx * 2 + 1; // 取时辰中间小时
+
+            if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(shichenIdx)) {
+                showError(errorEl, '请填写完整信息');
                 return;
             }
-            
-            let solarYear = year, solarMonth = month, solarDay = day;
-            
-            // 如果选择的是农历，需要转换为公历
-            if (baziSelectedType === 'lunar') {
-                try {
-                    const resp = await fetch(`/api/lunar-to-solar?year=${year}&month=${month}&day=${day}`);
-                    const data = await resp.json();
-                    if (data.success) {
-                        solarYear = data.solarYear;
-                        solarMonth = data.solarMonth;
-                        solarDay = data.solarDay;
-                    } else {
-                        alert('农历日期转换失败');
+            if (year < 1900 || year > 2100) {
+                showError(errorEl, '年份范围为 1900-2100 年');
+                return;
+            }
+
+            // 检查缓存
+            const cacheKey = `${baziSelectedType}-${year}-${month}-${day}-${shichenIdx}`;
+            if (baziResultCache[cacheKey]) {
+                displayBaziResult(baziResultCache[cacheKey], year, month, day, shichenIdx);
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '计算中...';
+
+            try {
+                let solarYear = year, solarMonth = month, solarDay = day;
+
+                if (baziSelectedType === 'lunar') {
+                    try {
+                        const resp = await fetchWithTimeout(`/api/lunar-to-solar?year=${year}&month=${month}&day=${day}`);
+                        const data = await resp.json();
+                        if (data.success) {
+                            solarYear = data.solarYear;
+                            solarMonth = data.solarMonth;
+                            solarDay = data.solarDay;
+                        } else {
+                            showError(errorEl, data.error || '农历日期不存在');
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = '开始计算';
+                            return;
+                        }
+                    } catch (err) {
+                        showError(errorEl, err.name === 'AbortError' ? '请求超时，请重试' : '网络错误');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '开始计算';
                         return;
                     }
+                }
+
+                try {
+                    const resp = await fetchWithTimeout(`/api/lunar?year=${solarYear}&month=${solarMonth}&day=${solarDay}&hour=${hour}`);
+                    const data = await resp.json();
+                    if (data.success && data.bazi) {
+                        baziResultCache[cacheKey] = data;
+                        displayBaziResult(data, year, month, day, shichenIdx);
+                    } else {
+                        showError(errorEl, data.error || '八字计算失败');
+                    }
                 } catch (err) {
-                    alert('农历日期转换失败');
-                    return;
+                    showError(errorEl, err.name === 'AbortError' ? '请求超时，请重试' : '网络错误');
                 }
-            }
-            
-            // 获取八字
-            try {
-                const resp = await fetch(`/api/lunar?year=${solarYear}&month=${solarMonth}&day=${solarDay}&hour=${hour}`);
-                const data = await resp.json();
-                if (data.success && data.bazi) {
-                    document.getElementById('baziResultYear').textContent = data.bazi.year;
-                    document.getElementById('baziResultMonth').textContent = data.bazi.month;
-                    document.getElementById('baziResultDay').textContent = data.bazi.day;
-                    document.getElementById('baziResultTime').textContent = data.bazi.time;
-                    
-                    const typeLabel = baziSelectedType === 'solar' ? '公历' : '农历';
-                    document.getElementById('baziResultInfo').textContent = 
-                        `${typeLabel}：${year}年${month}月${day}日 ${hour}时`;
-                    
-                    showStep(stepResult);
-                } else {
-                    alert('八字计算失败');
-                }
-            } catch (err) {
-                alert('八字计算失败');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '开始计算';
             }
         });
-        
+
+        // 显示结果
+        function displayBaziResult(data, year, month, day, shichenIdx) {
+            const bazi = data.bazi;
+            if (!bazi) return;
+            baziLastResult = bazi;
+
+            document.getElementById('baziResultYear').textContent = bazi.year;
+            document.getElementById('baziResultMonth').textContent = bazi.month;
+            document.getElementById('baziResultDay').textContent = bazi.day;
+            document.getElementById('baziResultTime').textContent = bazi.time;
+
+            // 生肖
+            if (bazi.zodiac) {
+                document.getElementById('baziResultZodiac').textContent = `生肖：${bazi.zodiac}`;
+            }
+
+            // 五行
+            const wuxingEl = document.getElementById('baziResultWuxing');
+            if (bazi.wuxing) {
+                let wxHtml = '';
+                const wxNames = ['金', '木', '水', '火', '土'];
+                const wxEmojis = { '金': '⚔️', '木': '🌿', '水': '💧', '火': '🔥', '土': '🏔️' };
+                wxNames.forEach(wx => {
+                    const count = bazi.wuxing[wx] || 0;
+                    wxHtml += `<span class="wx-item" data-wx="${wx}"><span class="wx-name">${wxEmojis[wx]}${wx}</span><span class="wx-count">×${count}</span></span>`;
+                });
+                wuxingEl.innerHTML = wxHtml;
+            }
+
+            const typeLabel = baziSelectedType === 'solar' ? '公历' : '农历';
+            document.getElementById('baziResultInfo').textContent = 
+                `${typeLabel}：${year}年${month}月${day}日 ${shichenNames[shichenIdx]}`;
+
+            showStep(stepResult);
+        }
+
+        // 复制八字
+        copyBtn.addEventListener('click', () => {
+            if (!baziLastResult) return;
+            const b = baziLastResult;
+            const text = `八字：${b.year} ${b.month} ${b.day} ${b.time}\n生肖：${b.zodiac || '--'}`;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyBtn.textContent = '✓ 已复制';
+                    setTimeout(() => { copyBtn.textContent = '📋 复制八字'; }, 1500);
+                });
+            } else {
+                // fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                copyBtn.textContent = '✓ 已复制';
+                setTimeout(() => { copyBtn.textContent = '📋 复制八字'; }, 1500);
+            }
+        });
+
         // 重新计算
         resetBtn.addEventListener('click', () => {
             showStep(stepType);

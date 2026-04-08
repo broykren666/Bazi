@@ -23,6 +23,91 @@ const heavenlyStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '
 const earthlyBranches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 // 生肖
 const zodiacs = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
+// 五行
+const stemWuxing = {
+    '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土',
+    '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水'
+};
+const branchWuxing = {
+    '子': '水', '丑': '土', '寅': '木', '卯': '木', '辰': '土',
+    '巳': '火', '午': '火', '未': '土', '申': '金', '酉': '金', '戌': '土', '亥': '水'
+};
+
+// 验证日期范围（lunar-calendar 支持 1900-2100）
+function isValidDateRange(year, month, day) {
+    return year >= 1900 && year <= 2100 && month >= 1 && month <= 12 && day >= 1 && day <= 31;
+}
+
+// 计算八字（四柱）
+function calculateBazi(solarYear, solarMonth, solarDay, hour) {
+    try {
+        const lunar = LunarCalendar.solarToLunar(solarYear, solarMonth, solarDay);
+
+        // 年柱
+        const yearIndex = (lunar.lunarYear - 4) % 60;
+        const yearStemIndex = yearIndex % 10;
+        const yearBranchIndex = yearIndex % 12;
+        const yearStem = heavenlyStems[yearStemIndex];
+        const yearBranch = earthlyBranches[yearBranchIndex];
+        const yearPillar = yearStem + yearBranch;
+
+        // 月柱：五虎遁（根据年干推算月干）
+        const lunarMonth = lunar.lunarMonth;
+        const monthBranchIdx = (lunarMonth + 1) % 12;
+        const monthStemStart = (yearStemIndex % 5) * 2;
+        const monthStemIdx = (monthStemStart + lunarMonth - 1) % 10;
+        const monthStem = heavenlyStems[monthStemIdx];
+        const monthBranch = earthlyBranches[monthBranchIdx];
+        const monthPillar = monthStem + monthBranch;
+
+        // 日柱：基于公历日期计算
+        const baseDate = new Date(1900, 0, 31);
+        const targetDate = new Date(solarYear, solarMonth - 1, solarDay);
+        const dayDiff = Math.floor((targetDate - baseDate) / (24 * 60 * 60 * 1000));
+        const dayIndex = ((dayDiff % 60) + 60) % 60;
+        const dayStemIdx = dayIndex % 10;
+        const dayBranchIdx = dayIndex % 12;
+        const dayStem = heavenlyStems[dayStemIdx];
+        const dayBranch = earthlyBranches[dayBranchIdx];
+        const dayPillar = dayStem + dayBranch;
+
+        // 时柱：五鼠遁
+        const timeBranchIdx = Math.floor(((hour + 1) % 24) / 2) % 12;
+        const timeStemStart = (dayStemIdx % 5) * 2;
+        const timeStemIdx = (timeStemStart + timeBranchIdx) % 10;
+        const timeStem = heavenlyStems[timeStemIdx];
+        const timeBranch = earthlyBranches[timeBranchIdx];
+        const timePillar = timeStem + timeBranch;
+
+        // 生肖
+        const zodiacIndex = (lunar.lunarYear - 4) % 12;
+        const zodiac = zodiacs[zodiacIndex];
+
+        // 五行统计
+        const pillars = [yearPillar, monthPillar, dayPillar, timePillar];
+        const wuxingCount = { '金': 0, '木': 0, '水': 0, '火': 0, '土': 0 };
+        pillars.forEach(p => {
+            wuxingCount[stemWuxing[p[0]]]++;
+            wuxingCount[branchWuxing[p[1]]]++;
+        });
+
+        return {
+            year: yearPillar,
+            month: monthPillar,
+            day: dayPillar,
+            time: timePillar,
+            zodiac,
+            wuxing: wuxingCount,
+            lunarYear: lunar.lunarYear,
+            lunarMonth: lunar.lunarMonth,
+            lunarDay: lunar.lunarDay,
+            isLeap: lunar.isLeap
+        };
+    } catch (err) {
+        console.error('八字计算错误:', err);
+        return null;
+    }
+}
 
 const PORT = 3243;
 
@@ -65,71 +150,39 @@ const server = http.createServer((req, res) => {
         const day = parseInt(parsedUrl.query.day);
         const hour = parseInt(parsedUrl.query.hour) || 0;
 
-        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        if (!isValidDateRange(year, month, day)) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ success: false, error: '参数错误' }));
+            res.end(JSON.stringify({ success: false, error: '日期超出有效范围（1900-2100年）' }));
             return;
         }
 
         try {
-            // 使用 lunar-calendar 库计算农历
             const lunar = LunarCalendar.solarToLunar(year, month, day);
 
-            // 计算天干地支
             const yearIndex = (lunar.lunarYear - 4) % 60;
-            const yearStemIndex = yearIndex % 10;
-            const yearBranchIndex = yearIndex % 12;
-            const yearGanzhi = heavenlyStems[yearStemIndex] + earthlyBranches[yearBranchIndex];
+            const stemIndex = yearIndex % 10;
+            const branchIndex = yearIndex % 12;
+            const ganzhi = heavenlyStems[stemIndex] + earthlyBranches[branchIndex];
 
-            // 计算生肖
             const zodiacIndex = (lunar.lunarYear - 4) % 12;
             const zodiac = zodiacs[zodiacIndex];
 
-            // 格式化农历字符串为中文汉字
             const yearChinese = toLunarChinese(lunar.lunarYear);
             const monthChinese = toLunarChinese(lunar.lunarMonth);
             const dayChinese = toLunarChinese(lunar.lunarDay);
 
-            let lunarStr = `${yearGanzhi}${zodiac}年 ${monthChinese}月${dayChinese}`;
+            let lunarStr = `${ganzhi}${zodiac}年 ${monthChinese}月${dayChinese}`;
             if (lunar.isLeap) {
                 lunarStr = `闰${lunarStr}`;
             }
 
-            // 计算八字（四柱）
-            // 年柱
-            const yearPillar = yearGanzhi;
-
-            // 月柱：根据年干和农历月份推算
-            const monthStemStart = (yearStemIndex % 5) * 2; // 五虎遁：甲己年起丙寅
-            const monthStemIndex = (monthStemStart + lunar.lunarMonth - 1) % 10;
-            const monthBranchIndex = (lunar.lunarMonth + 1) % 12; // 正月建寅
-            const monthPillar = heavenlyStems[monthStemIndex] + earthlyBranches[monthBranchIndex];
-
-            // 日柱：基于公历日期计算
-            const baseDate = new Date(1900, 0, 31); // 1900年1月31日为甲子日
-            const targetDate = new Date(year, month - 1, day);
-            const dayDiff = Math.floor((targetDate - baseDate) / (24 * 60 * 60 * 1000));
-            const dayIndex = ((dayDiff % 60) + 60) % 60;
-            const dayStemIndex = dayIndex % 10;
-            const dayBranchIndex = dayIndex % 12;
-            const dayPillar = heavenlyStems[dayStemIndex] + earthlyBranches[dayBranchIndex];
-
-            // 时柱：根据日干和时辰推算
-            const timeBranchIndex = Math.floor(((hour + 1) % 24) / 2) % 12;
-            const timeStemStart = (dayStemIndex % 5) * 2; // 五鼠遁：甲己日起甲子
-            const timeStemIndex = (timeStemStart + timeBranchIndex) % 10;
-            const timePillar = heavenlyStems[timeStemIndex] + earthlyBranches[timeBranchIndex];
+            const bazi = calculateBazi(year, month, day, hour);
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: true,
                 lunarStr,
-                bazi: {
-                    year: yearPillar,
-                    month: monthPillar,
-                    day: dayPillar,
-                    time: timePillar
-                }
+                bazi
             }));
         } catch (err) {
             console.error('农历计算错误:', err);
@@ -144,16 +197,31 @@ const server = http.createServer((req, res) => {
         const year = parseInt(parsedUrl.query.year);
         const month = parseInt(parsedUrl.query.month);
         const day = parseInt(parsedUrl.query.day);
+        const isLeap = parsedUrl.query.isLeap === 'true';
 
-        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        if (!isValidDateRange(year, month, day)) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ success: false, error: '参数错误' }));
+            res.end(JSON.stringify({ success: false, error: '日期超出有效范围（1900-2100年）' }));
             return;
         }
 
         try {
-            // lunar-calendar 库提供农历转公历功能
-            const solar = LunarCalendar.lunarToSolar(year, month, day);
+            let solar;
+            if (isLeap) {
+                solar = LunarCalendar.lunarToSolar(year, month, day, { isLeapMonth: true });
+                if (!solar || !solar.year) {
+                    solar = LunarCalendar.lunarToSolar(year, month, day);
+                }
+            } else {
+                solar = LunarCalendar.lunarToSolar(year, month, day);
+            }
+
+            if (!solar || !solar.year) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: false, error: '农历日期不存在，请检查输入' }));
+                return;
+            }
+
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: true,

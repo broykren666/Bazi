@@ -109,6 +109,10 @@
                 
                 <!-- 步骤2：输入日期时间 -->
                 <div class="bazi-step" id="baziStepInput">
+                    <div class="quick-actions">
+                        <button class="quick-btn" id="baziTodayBtn">📅 今天</button>
+                        <button class="quick-btn" id="baziNowBtn">⏰ 此刻</button>
+                    </div>
                     <div class="input-group">
                         <div class="input-row">
                             <label>年</label>
@@ -123,11 +127,25 @@
                             <input type="number" id="baziInputDay" min="1" max="31" value="1" class="bazi-input">
                         </div>
                         <div class="input-row">
-                            <label>时</label>
-                            <input type="number" id="baziInputHour" min="0" max="23" value="12" class="bazi-input">
+                            <label>时辰</label>
+                            <select id="baziInputShichen" class="bazi-input bazi-select">
+                                <option value="0">子时 (23-1)</option>
+                                <option value="1">丑时 (1-3)</option>
+                                <option value="2">寅时 (3-5)</option>
+                                <option value="3">卯时 (5-7)</option>
+                                <option value="4">辰时 (7-9)</option>
+                                <option value="5">巳时 (9-11)</option>
+                                <option value="6" selected>午时 (11-13)</option>
+                                <option value="7">未时 (13-15)</option>
+                                <option value="8">申时 (15-17)</option>
+                                <option value="9">酉时 (17-19)</option>
+                                <option value="10">戌时 (19-21)</option>
+                                <option value="11">亥时 (21-23)</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="input-hint" id="baziInputHint">公历：2026年1月1日 12时</div>
+                    <div class="input-hint" id="baziInputHint">公历：2026年1月1日 午时</div>
+                    <div class="error-msg" id="baziInputError"></div>
                     <button class="calc-btn" id="baziCalcSubmit">开始计算</button>
                 </div>
                 
@@ -151,8 +169,16 @@
                             <span class="pillar-value" id="baziResultTime">--</span>
                         </div>
                     </div>
+                    <div class="result-extra" id="baziResultExtra">
+                        <div class="result-zodiac" id="baziResultZodiac">生肖：--</div>
+                        <div class="result-wuxing" id="baziResultWuxing"></div>
+                    </div>
                     <div class="result-info" id="baziResultInfo"></div>
-                    <button class="calc-btn" id="baziCalcReset">重新计算</button>
+                    <div class="error-msg" id="baziResultError"></div>
+                    <div class="result-actions">
+                        <button class="calc-btn" id="baziCopyBtn">📋 复制八字</button>
+                        <button class="calc-btn secondary" id="baziCalcReset">重新计算</button>
+                    </div>
                 </div>
             </div>
         </div>

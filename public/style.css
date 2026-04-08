@@ -734,6 +734,38 @@ body {
     letter-spacing: 1px;
 }
 
+/* 快捷操作 */
+.quick-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.quick-btn {
+    padding: 0.4rem 0.8rem;
+    background: rgba(62, 110, 255, 0.1);
+    border: 1px solid rgba(100, 150, 255, 0.25);
+    border-radius: 12px;
+    color: #88ccff;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quick-btn:hover {
+    background: rgba(62, 110, 255, 0.2);
+    border-color: rgba(136, 204, 255, 0.4);
+}
+
+/* 下拉选择 */
+.bazi-select {
+    appearance: none;
+    cursor: pointer;
+    padding-right: 0.4rem;
+    font-size: 0.85rem;
+}
+
 /* 类型选择 */
 .type-options {
     display: flex;
@@ -810,8 +842,22 @@ body {
     text-align: center;
     font-size: 0.8rem;
     color: #6688bb;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     min-height: 1.2rem;
+}
+
+/* 错误信息 */
+.error-msg {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #ff6b6b;
+    margin-bottom: 0.8rem;
+    min-height: 1.2rem;
+    display: none;
+}
+
+.error-msg.show {
+    display: block;
 }
 
 /* 计算按钮 */
@@ -832,6 +878,16 @@ body {
 .calc-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 8px 25px rgba(62, 110, 255, 0.4);
+}
+
+.calc-btn.secondary {
+    background: rgba(15, 25, 40, 0.6);
+    border: 1px solid rgba(100, 150, 255, 0.3);
+}
+
+.calc-btn.secondary:hover {
+    background: rgba(20, 35, 60, 0.8);
+    border-color: rgba(136, 204, 255, 0.5);
 }
 
 /* 结果展示 */
@@ -876,6 +932,69 @@ body {
     line-height: 1.5;
 }
 
+.result-extra {
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    background: rgba(15, 25, 40, 0.4);
+    border-radius: 12px;
+    border: 1px solid rgba(100, 150, 255, 0.1);
+}
+
+.result-zodiac {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #88ccff;
+    margin-bottom: 0.5rem;
+}
+
+.result-wuxing {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.wx-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+}
+
+.wx-name {
+    font-weight: 500;
+}
+
+.wx-count {
+    color: #6688bb;
+    font-size: 0.75rem;
+}
+
+.wx-item[data-wx="金"] .wx-name { color: #ffd700; }
+.wx-item[data-wx="木"] .wx-name { color: #4caf50; }
+.wx-item[data-wx="水"] .wx-name { color: #2196f3; }
+.wx-item[data-wx="火"] .wx-name { color: #ff5722; }
+.wx-item[data-wx="土"] .wx-name { color: #a1887f; }
+
+.result-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.result-actions .calc-btn {
+    flex: 1;
+}
+
+/* 结果淡入动画 */
+.bazi-step.show {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* 手机端适配 */
 @media (max-width: 640px) {
     .modal-content {
@@ -896,14 +1015,26 @@ body {
         font-size: 0.9rem;
     }
     
+    .bazi-select {
+        font-size: 0.75rem;
+    }
+    
     .result-bazi {
-        gap: 1rem;
+        gap: 0.8rem;
         padding: 0.8rem;
     }
     
     .pillar-value {
         font-size: 1.1rem;
         letter-spacing: 2px;
+    }
+    
+    .result-wuxing {
+        gap: 0.5rem;
+    }
+    
+    .result-actions {
+        flex-direction: column;
     }
 }
 .clock-footer {
