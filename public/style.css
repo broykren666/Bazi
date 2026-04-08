@@ -44,6 +44,14 @@ body {
     margin-bottom: 1rem;
 }
 
+.lunar-shichen-row {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 .date-box {
     font-size: 2rem;
     letter-spacing: 3px;
