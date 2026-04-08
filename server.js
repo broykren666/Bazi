@@ -63,23 +63,24 @@ const server = http.createServer((req, res) => {
         const year = parseInt(parsedUrl.query.year);
         const month = parseInt(parsedUrl.query.month);
         const day = parseInt(parsedUrl.query.day);
-        
+        const hour = parseInt(parsedUrl.query.hour) || 0;
+
         if (isNaN(year) || isNaN(month) || isNaN(day)) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ success: false, error: '参数错误' }));
             return;
         }
-        
+
         try {
             // 使用 lunar-calendar 库计算农历
             const lunar = LunarCalendar.solarToLunar(year, month, day);
 
             // 计算天干地支
             const yearIndex = (lunar.lunarYear - 4) % 60;
-            const stemIndex = yearIndex % 10;
-            const branchIndex = yearIndex % 12;
-            const ganzhi = heavenlyStems[stemIndex] + earthlyBranches[branchIndex];
-            
+            const yearStemIndex = yearIndex % 10;
+            const yearBranchIndex = yearIndex % 12;
+            const yearGanzhi = heavenlyStems[yearStemIndex] + earthlyBranches[yearBranchIndex];
+
             // 计算生肖
             const zodiacIndex = (lunar.lunarYear - 4) % 12;
             const zodiac = zodiacs[zodiacIndex];
@@ -88,14 +89,48 @@ const server = http.createServer((req, res) => {
             const yearChinese = toLunarChinese(lunar.lunarYear);
             const monthChinese = toLunarChinese(lunar.lunarMonth);
             const dayChinese = toLunarChinese(lunar.lunarDay);
-            
-            let lunarStr = `${ganzhi}${zodiac}年 ${monthChinese}月${dayChinese}`;
+
+            let lunarStr = `${yearGanzhi}${zodiac}年 ${monthChinese}月${dayChinese}`;
             if (lunar.isLeap) {
                 lunarStr = `闰${lunarStr}`;
             }
 
+            // 计算八字（四柱）
+            // 年柱
+            const yearPillar = yearGanzhi;
+
+            // 月柱：根据年干和农历月份推算
+            const monthStemStart = (yearStemIndex % 5) * 2; // 五虎遁：甲己年起丙寅
+            const monthStemIndex = (monthStemStart + lunar.lunarMonth - 1) % 10;
+            const monthBranchIndex = (lunar.lunarMonth + 1) % 12; // 正月建寅
+            const monthPillar = heavenlyStems[monthStemIndex] + earthlyBranches[monthBranchIndex];
+
+            // 日柱：基于公历日期计算
+            const baseDate = new Date(1900, 0, 31); // 1900年1月31日为甲子日
+            const targetDate = new Date(year, month - 1, day);
+            const dayDiff = Math.floor((targetDate - baseDate) / (24 * 60 * 60 * 1000));
+            const dayIndex = ((dayDiff % 60) + 60) % 60;
+            const dayStemIndex = dayIndex % 10;
+            const dayBranchIndex = dayIndex % 12;
+            const dayPillar = heavenlyStems[dayStemIndex] + earthlyBranches[dayBranchIndex];
+
+            // 时柱：根据日干和时辰推算
+            const timeBranchIndex = Math.floor(((hour + 1) % 24) / 2) % 12;
+            const timeStemStart = (dayStemIndex % 5) * 2; // 五鼠遁：甲己日起甲子
+            const timeStemIndex = (timeStemStart + timeBranchIndex) % 10;
+            const timePillar = heavenlyStems[timeStemIndex] + earthlyBranches[timeBranchIndex];
+
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ success: true, lunarStr }));
+            res.end(JSON.stringify({
+                success: true,
+                lunarStr,
+                bazi: {
+                    year: yearPillar,
+                    month: monthPillar,
+                    day: dayPillar,
+                    time: timePillar
+                }
+            }));
         } catch (err) {
             console.error('农历计算错误:', err);
             res.writeHead(500, { 'Content-Type': 'application/json' });

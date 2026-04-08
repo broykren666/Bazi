@@ -279,20 +279,34 @@
     // 获取农历日期（通过API从服务器获取）
     let cachedLunar = {};
     let lastLunarDate = '';
-    
-    function fetchLunarFromServer(year, month, day) {
-        return fetch(`/api/lunar?year=${year}&month=${month}&day=${day}`)
+
+    function fetchLunarFromServer(year, month, day, hour) {
+        return fetch(`/api/lunar?year=${year}&month=${month}&day=${day}&hour=${hour}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    return data.lunarStr;
+                    return { lunarStr: data.lunarStr, bazi: data.bazi };
                 }
-                return '农历数据获取失败';
+                return { lunarStr: '农历数据获取失败', bazi: null };
             })
             .catch(err => {
                 console.error('农历API错误:', err);
-                return '农历数据获取失败';
+                return { lunarStr: '农历数据获取失败', bazi: null };
             });
+    }
+
+    // 更新八字显示
+    function updateBaziDisplay(bazi) {
+        if (!bazi) return;
+        const yearElem = document.getElementById('baziYear');
+        const monthElem = document.getElementById('baziMonth');
+        const dayElem = document.getElementById('baziDay');
+        const timeElem = document.getElementById('baziTime');
+        
+        if (yearElem) yearElem.textContent = bazi.year;
+        if (monthElem) monthElem.textContent = bazi.month;
+        if (dayElem) dayElem.textContent = bazi.day;
+        if (timeElem) timeElem.textContent = bazi.time;
     }
 
     // 更新农历显示（异步，仅在日期变化时请求）
@@ -300,21 +314,25 @@
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
         const day = date.getDate();
-        const cacheKey = `${year}-${month}-${day}`;
-        
+        const hour = date.getHours();
+        const cacheKey = `${year}-${month}-${day}-${hour}`;
+        const dateKey = `${year}-${month}-${day}`;
+
         if (cachedLunar[cacheKey]) {
             const lunarElem = document.getElementById('lunarDisplay');
-            if (lunarElem) lunarElem.innerHTML = cachedLunar[cacheKey];
+            if (lunarElem) lunarElem.innerHTML = cachedLunar[cacheKey].lunarStr;
+            updateBaziDisplay(cachedLunar[cacheKey].bazi);
             return;
         }
-        
-        // 如果日期变化，请求新的农历
-        if (lastLunarDate !== cacheKey) {
-            lastLunarDate = cacheKey;
-            const lunarStr = await fetchLunarFromServer(year, month, day);
-            cachedLunar[cacheKey] = lunarStr;
+
+        // 如果日期或时辰变化，请求新的农历
+        if (lastLunarDate !== dateKey) {
+            lastLunarDate = dateKey;
+            const result = await fetchLunarFromServer(year, month, day, hour);
+            cachedLunar[cacheKey] = result;
             const lunarElem = document.getElementById('lunarDisplay');
-            if (lunarElem) lunarElem.innerHTML = lunarStr;
+            if (lunarElem) lunarElem.innerHTML = result.lunarStr;
+            updateBaziDisplay(result.bazi);
         }
     }
 
