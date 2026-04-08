@@ -164,8 +164,8 @@
     // 更新刻数标签文本（根据当前时辰）
     function updateKeLabels(shichenName) {
         const keNames = [
-            `${shichenName}初初`, `${shichenName}初一`, `${shichenName}初二`, `${shichenName}初三`,
-            `${shichenName}正初`, `${shichenName}正一`, `${shichenName}正二`, `${shichenName}正三`
+            `${shichenName}初•初刻`, `${shichenName}初•一刻`, `${shichenName}初•二刻`, `${shichenName}初•三刻`,
+            `${shichenName}正•初刻`, `${shichenName}正•一刻`, `${shichenName}正•二刻`, `${shichenName}正•三刻`
         ];
         document.querySelectorAll('.ke-label').forEach((el, i) => {
             if (keNames[i]) {
