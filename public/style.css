@@ -28,8 +28,99 @@ body {
     border: 1px solid rgba(90, 150, 255, 0.3);
     text-align: center;
     width: 100%;
-    max-width: 800px;
+    max-width: 1100px;
     transition: transform 0.2s;
+    display: flex;
+    gap: 2.5rem;
+    align-items: flex-start;
+}
+
+.clock-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.clock-right {
+    flex-shrink: 0;
+    width: 220px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+/* 右侧时辰对照 */
+.shichen-reference {
+    width: 100%;
+    background: rgba(15, 25, 40, 0.4);
+    border-radius: 16px;
+    border: 1px solid rgba(100, 150, 255, 0.15);
+    padding: 1rem 0.8rem;
+}
+
+.reference-title {
+    font-size: 0.8rem;
+    color: #88ccff;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(100, 150, 255, 0.2);
+    text-align: center;
+}
+
+.shichen-reference-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.shichen-reference-table tr {
+    transition: all 0.2s;
+}
+
+.shichen-reference-table tr:hover {
+    background: rgba(62, 110, 255, 0.1);
+}
+
+.shichen-reference-table td {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.75rem;
+    color: #8899bb;
+    border-bottom: 1px solid rgba(100, 150, 255, 0.06);
+}
+
+.shichen-reference-table tr:last-child td {
+    border-bottom: none;
+}
+
+.shichen-reference-table .ref-emoji {
+    font-size: 0.85rem;
+    width: 22px;
+    text-align: center;
+}
+
+.shichen-reference-table .ref-name {
+    font-weight: 500;
+    letter-spacing: 1px;
+    width: 48px;
+    text-align: left;
+}
+
+.shichen-reference-table .ref-time {
+    font-family: 'JetBrains Mono', monospace;
+    color: #7799cc;
+    text-align: right;
+    font-size: 0.72rem;
+}
+
+.shichen-reference-table tr.current td {
+    color: #88ccff;
+    font-weight: 600;
+    background: rgba(62, 110, 255, 0.1);
+    border-radius: 4px;
+}
+
+.shichen-reference-table tr.current td.ref-time {
+    color: #88ccff;
 }
 
 .clock-container:hover {
@@ -107,9 +198,32 @@ body {
 .progress-header {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.6rem;
     margin-bottom: 1rem;
     flex-wrap: wrap;
+    position: relative;
+}
+
+.progress-help-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 0.85rem;
+    color: #6688bb;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 1px solid rgba(102, 136, 187, 0.3);
+    transition: all 0.2s;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.progress-help-icon:hover {
+    color: #88ccff;
+    border-color: rgba(136, 204, 255, 0.5);
+    background: rgba(136, 204, 255, 0.1);
 }
 
 .progress-shichen-name {
@@ -143,7 +257,100 @@ body {
     font-family: 'JetBrains Mono', monospace;
     font-weight: 600;
     letter-spacing: 0.5px;
-    margin-left: 0.5rem;
+}
+
+/* 时辰悬浮弹窗 */
+.shichen-popup {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: rgba(12, 18, 40, 0.98);
+    border: 1px solid rgba(100, 150, 255, 0.3);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    min-width: 280px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(62, 110, 255, 0.15);
+    z-index: 100;
+    display: none;
+    backdrop-filter: blur(12px);
+    animation: popupFadeIn 0.2s ease;
+}
+
+.shichen-popup.show {
+    display: block;
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.popup-title {
+    font-size: 0.85rem;
+    color: #88ccff;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(100, 150, 255, 0.2);
+    text-align: center;
+}
+
+.shichen-popup-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.shichen-popup-table tr {
+    transition: background 0.2s;
+}
+
+.shichen-popup-table tr:hover {
+    background: rgba(62, 110, 255, 0.1);
+}
+
+.shichen-popup-table td {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.78rem;
+    color: #aabbdd;
+    border-bottom: 1px solid rgba(100, 150, 255, 0.08);
+}
+
+.shichen-popup-table tr:last-child td {
+    border-bottom: none;
+}
+
+.shichen-popup-table .popup-emoji {
+    font-size: 0.9rem;
+    width: 24px;
+    text-align: center;
+}
+
+.shichen-popup-table .popup-name {
+    font-weight: 500;
+    letter-spacing: 1px;
+    width: 50px;
+}
+
+.shichen-popup-table .popup-time {
+    font-family: 'JetBrains Mono', monospace;
+    color: #7799cc;
+    text-align: right;
+}
+
+.shichen-popup-table tr.current td {
+    color: #88ccff;
+    font-weight: 600;
+}
+
+.shichen-popup-table tr.current td.popup-time {
+    color: #88ccff;
 }
 
 /* 进度条轨道 */
@@ -336,7 +543,11 @@ button:disabled {
 
 @media (max-width: 550px) {
     .clock-container {
+        flex-direction: column;
         padding: 1.5rem;
+    }
+    .clock-right {
+        width: 100%;
     }
     .time-wrapper {
         flex-direction: row;

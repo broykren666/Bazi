@@ -9,35 +9,43 @@
 </head>
 <body>
     <div class="clock-container">
-        <div class="date-container">
-            <div class="date-box" id="dateDisplay">加载中...</div>
-            <div class="lunar-shichen-row">
-                <div class="lunar-box" id="lunarDisplay">🪭 加载农历...</div>
+        <div class="clock-left">
+            <div class="date-container">
+                <div class="date-box" id="dateDisplay">加载中...</div>
+                <div class="lunar-shichen-row">
+                    <div class="lunar-box" id="lunarDisplay">🪭 加载农历...</div>
+                </div>
+            </div>
+            <div class="shichen-timeline">
+                <div class="progress-header">
+                    <span class="progress-shichen-name" id="progressShichenName">子时</span>
+                    <span class="progress-shichen-detail" id="progressShichenDetail">23:00 - 01:00</span>
+                    <span class="progress-elapsed" id="progressElapsed">已进 0分0秒</span>
+                    <span class="progress-percent" id="progressPercent">0%</span>
+                </div>
+                <div class="progress-track" id="progressTrack">
+                    <div class="progress-fill" id="progressFill"></div>
+                    <div class="progress-thumb" id="progressThumb"></div>
+                </div>
+                <div class="progress-ke-labels" id="progressKeLabels"></div>
+            </div>
+            <div class="time-wrapper">
+                <span class="time-main" id="timeDisplay">--:--:--</span>
+                <span class="milliseconds" id="msDisplay">.---</span>
+            </div>
+            <div class="timezone-bar">
+                <span class="info-chip" id="timezoneChip">🌍 自动检测时区</span>
+            </div>
+            <button id="syncBtn">⟳ 同步服务器时间</button>
+            <div class="refresh-note">
+                🕒 实时刷新 ｜ 基于高精度计时器 ｜ 农历 + 公历
             </div>
         </div>
-        <div class="shichen-timeline">
-            <div class="progress-header">
-                <span class="progress-shichen-name" id="progressShichenName">子时</span>
-                <span class="progress-shichen-detail" id="progressShichenDetail">23:00 - 01:00</span>
-                <span class="progress-elapsed" id="progressElapsed">已进 0分0秒</span>
-                <span class="progress-percent" id="progressPercent">0%</span>
+        <div class="clock-right">
+            <div class="shichen-reference">
+                <div class="reference-title">十二时辰时间对照</div>
+                <div class="reference-content" id="shichenReference"></div>
             </div>
-            <div class="progress-track" id="progressTrack">
-                <div class="progress-fill" id="progressFill"></div>
-                <div class="progress-thumb" id="progressThumb"></div>
-            </div>
-            <div class="progress-ke-labels" id="progressKeLabels"></div>
-        </div>
-        <div class="time-wrapper">
-            <span class="time-main" id="timeDisplay">--:--:--</span>
-            <span class="milliseconds" id="msDisplay">.---</span>
-        </div>
-        <div class="timezone-bar">
-            <span class="info-chip" id="timezoneChip">🌍 自动检测时区</span>
-        </div>
-        <button id="syncBtn">⟳ 同步服务器时间</button>
-        <div class="refresh-note">
-            🕒 实时刷新 ｜ 基于高精度计时器 ｜ 农历 + 公历
         </div>
     </div>
 

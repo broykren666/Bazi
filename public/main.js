@@ -136,6 +136,31 @@
         return hour.toString().padStart(2, '0') + ':00';
     }
 
+    // 初始化右侧时辰对照表
+    function initShichenReference() {
+        const container = document.getElementById('shichenReference');
+        if (!container) return null;
+        
+        function renderReference(currentShichenIndex) {
+            let html = '<table class="shichen-reference-table">';
+            shichenList.forEach((sc, i) => {
+                const isCurrent = i === currentShichenIndex;
+                const timeStr = `${formatHour(sc.start)} - ${formatHour(sc.end)}`;
+                html += `<tr class="${isCurrent ? 'current' : ''}" data-index="${i}">
+                    <td class="ref-emoji">${sc.emoji}</td>
+                    <td class="ref-name">${sc.name}时</td>
+                    <td class="ref-time">${timeStr}</td>
+                </tr>`;
+            });
+            html += '</table>';
+            container.innerHTML = html;
+        }
+        
+        return renderReference;
+    }
+
+    const updateShichenReference = initShichenReference();
+
     // 计算当前时辰已过的刻数（初/正制：每个时辰分为初和正，各4刻）
     function getKe(shichenName, minutes) {
         const halfHour = 60; // 每个时辰分为初/正各60分钟
@@ -200,11 +225,14 @@
         const progress = Math.min(Math.max(secondsFromStart / totalShichenSeconds, 0), 1);
         const progressPercent = Math.round(progress * 100);
         
-        // 时辰变化时，更新刻数标签
+        // 时辰变化时，更新刻数标签和对照表
         if (shichenIndex !== lastShichenIndex) {
             lastShichenIndex = shichenIndex;
             initKeLabels();
             updateKeLabels(currentShichen.name);
+            if (updateShichenReference) {
+                updateShichenReference(shichenIndex);
+            }
         }
         
         // 更新进度条
