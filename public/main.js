@@ -365,36 +365,6 @@
         animationId = requestAnimationFrame(updateClock);
     }
 
-    function resync() {
-        const btn = document.getElementById('syncBtn');
-        if(btn) {
-            btn.innerText = '⏳ 同步中...';
-            btn.disabled = true;
-        }
-        fetchServerTime().then(() => {
-            if(btn) {
-                btn.innerText = '✓ 同步完成';
-                setTimeout(() => {
-                    if(btn) btn.innerText = '⟳ 同步服务器时间';
-                    btn.disabled = false;
-                }, 1500);
-            }
-            const nowDisplay = getCurrentAccurateTime();
-            document.getElementById('dateDisplay').innerText = formatDate(nowDisplay);
-            document.getElementById('timeDisplay').innerText = formatTime(nowDisplay);
-            document.getElementById('msDisplay').innerText = '.' + getMilliseconds(nowDisplay);
-            updateLunarDisplay(nowDisplay);
-        }).catch(() => {
-            if(btn) {
-                btn.innerText = '⚠️ 同步失败';
-                setTimeout(() => {
-                    if(btn) btn.innerText = '⟳ 同步服务器时间';
-                    btn.disabled = false;
-                }, 2000);
-            }
-        });
-    }
-
     // 初次启动
     updateTimezoneDisplay();
     initKeLabels();
@@ -410,11 +380,6 @@
         updateShichenDisplay(initialDate);
         updateClock();
     });
-
-    const syncButton = document.getElementById('syncBtn');
-    if (syncButton) {
-        syncButton.addEventListener('click', resync);
-    }
 
     window.addEventListener('beforeunload', () => {
         if(animationId) cancelAnimationFrame(animationId);

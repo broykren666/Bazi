@@ -23,6 +23,9 @@
                     <span class="time-main" id="timeDisplay">--:--:--</span>
                     <span class="milliseconds" id="msDisplay">.---</span>
                 </div>
+                <div class="timezone-info">
+                    <span class="info-chip" id="timezoneChip">🌍 自动检测时区</span>
+                </div>
             </div>
 
             <!-- 农历时辰区块 -->
@@ -52,17 +55,6 @@
                     <div class="progress-ke-labels" id="progressKeLabels"></div>
                 </div>
             </div>
-
-            <!-- 时区信息区块 -->
-            <div class="block block-info">
-                <div class="timezone-bar">
-                    <span class="info-chip" id="timezoneChip">🌍 自动检测时区</span>
-                </div>
-                <button id="syncBtn">⟳ 同步服务器时间</button>
-                <div class="refresh-note">
-                    🕒 实时刷新 ｜ 基于高精度计时器 ｜ 农历 + 公历
-                </div>
-            </div>
         </div>
 
         <!-- 右侧时辰对照 -->
@@ -72,6 +64,9 @@
                 <div class="reference-content" id="shichenReference"></div>
             </div>
         </div>
+    </div>
+    <div class="clock-footer">
+        🕒 实时刷新 ｜ 基于高精度计时器 ｜ 农历 + 公历
     </div>
 
     <script src="main.js"></script>

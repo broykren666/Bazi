@@ -543,8 +543,16 @@ body {
     margin-left: 8px;
 }
 
+.timezone-info {
+    margin-top: 0.8rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
 .timezone-bar {
-    margin: 0 0 0.8rem;
+    margin: 0;
     display: flex;
     justify-content: center;
     gap: 28px;
@@ -565,55 +573,27 @@ body {
     letter-spacing: 0.5px;
 }
 
-.refresh-note {
-    margin-top: 0.5rem;
+/* 容器页脚 */
+.clock-footer {
+    text-align: center;
     font-size: 0.7rem;
-    opacity: 0.6;
+    opacity: 0.5;
     font-family: system-ui;
     letter-spacing: 1px;
+    padding: 0.8rem;
+    color: #aabbdd;
 }
 
-/* 信息区块 */
-.block-info {
-    text-align: center;
-}
-
-.block-info button {
-    margin: 0.5rem auto;
-    display: block;
-}
-
-.block-info .refresh-note {
-    margin-top: 0.8rem;
+@media (max-width: 640px) {
+    .clock-footer {
+        font-size: 0.6rem;
+        padding: 0.6rem;
+    }
 }
 
 .accuracy {
     color: #7effb3;
     font-weight: bold;
-}
-
-button {
-    background: none;
-    border: 1px solid #4a6eff;
-    color: #ccddff;
-    padding: 8px 16px;
-    border-radius: 40px;
-    margin-top: 16px;
-    cursor: pointer;
-    font-family: 'Inter', monospace;
-    transition: 0.2s;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-}
-
-button:hover {
-    background: #2a3faa40;
-    color: white;
-}
-
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
 }
 
 @media (max-width: 640px) {
@@ -754,23 +734,13 @@ button:disabled {
     }
     
     /* 时区信息 */
-    .timezone-bar {
-        gap: 0.5rem;
-        padding: 0.5rem;
+    .timezone-info {
+        margin-top: 0.6rem;
     }
     
     .info-chip {
         font-size: 0.75rem;
         padding: 4px 10px;
-    }
-    
-    button {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-    
-    .refresh-note {
-        font-size: 0.65rem;
     }
     
     /* 右侧对照表 - 手机端改为横向滚动 */
