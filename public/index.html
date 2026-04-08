@@ -55,6 +55,7 @@
                         <span class="bazi-label">时柱</span>
                         <span class="bazi-value" id="baziTime">--</span>
                     </div>
+                    <div class="bazi-calc-icon" id="baziCalcBtn" title="计算生辰八字">🧮</div>
                 </div>
                 <div class="shichen-timeline">
                     <div class="progress-header">
@@ -82,10 +83,77 @@
                 <div class="reference-title">十二时辰时间对照</div>
                 <div class="reference-content" id="shichenReference"></div>
             </div>
-            </div>
         </div>
         <div class="clock-footer">
             🕒 实时刷新 ｜ 基于高精度计时器 ｜ 农历 + 公历
+        </div>
+    </div>
+
+    <!-- 八字计算弹窗 -->
+    <div class="modal-overlay" id="baziModalOverlay">
+        <div class="modal-content" id="baziModal">
+            <div class="modal-header">
+                <span class="modal-title">🔮 计算生辰八字</span>
+                <span class="modal-close" id="baziModalClose">✕</span>
+            </div>
+            <div class="modal-body">
+                <!-- 步骤1：选择日期类型 -->
+                <div class="bazi-step" id="baziStepType">
+                    <div class="step-desc">请选择日期类型</div>
+                    <div class="type-options">
+                        <button class="type-btn active" data-type="solar" id="baziSolarBtn">☀️ 公历</button>
+                        <button class="type-btn" data-type="lunar" id="baziLunarBtn">🌙 农历</button>
+                    </div>
+                </div>
+                
+                <!-- 步骤2：输入日期时间 -->
+                <div class="bazi-step" id="baziStepInput">
+                    <div class="input-group">
+                        <div class="input-row">
+                            <label>年</label>
+                            <input type="number" id="baziInputYear" min="1900" max="2100" value="2026" class="bazi-input">
+                        </div>
+                        <div class="input-row">
+                            <label>月</label>
+                            <input type="number" id="baziInputMonth" min="1" max="12" value="1" class="bazi-input">
+                        </div>
+                        <div class="input-row">
+                            <label>日</label>
+                            <input type="number" id="baziInputDay" min="1" max="31" value="1" class="bazi-input">
+                        </div>
+                        <div class="input-row">
+                            <label>时</label>
+                            <input type="number" id="baziInputHour" min="0" max="23" value="12" class="bazi-input">
+                        </div>
+                    </div>
+                    <div class="input-hint" id="baziInputHint">公历：2026年1月1日 12时</div>
+                    <button class="calc-btn" id="baziCalcSubmit">开始计算</button>
+                </div>
+                
+                <!-- 步骤3：显示结果 -->
+                <div class="bazi-step" id="baziStepResult">
+                    <div class="result-bazi" id="baziResultDisplay">
+                        <div class="result-pillar">
+                            <span class="pillar-label">年柱</span>
+                            <span class="pillar-value" id="baziResultYear">--</span>
+                        </div>
+                        <div class="result-pillar">
+                            <span class="pillar-label">月柱</span>
+                            <span class="pillar-value" id="baziResultMonth">--</span>
+                        </div>
+                        <div class="result-pillar">
+                            <span class="pillar-label">日柱</span>
+                            <span class="pillar-value" id="baziResultDay">--</span>
+                        </div>
+                        <div class="result-pillar">
+                            <span class="pillar-label">时柱</span>
+                            <span class="pillar-value" id="baziResultTime">--</span>
+                        </div>
+                    </div>
+                    <div class="result-info" id="baziResultInfo"></div>
+                    <button class="calc-btn" id="baziCalcReset">重新计算</button>
+                </div>
+            </div>
         </div>
     </div>
 

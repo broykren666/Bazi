@@ -139,6 +139,36 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // 处理农历转公历API端点
+    if (pathname === '/api/lunar-to-solar') {
+        const year = parseInt(parsedUrl.query.year);
+        const month = parseInt(parsedUrl.query.month);
+        const day = parseInt(parsedUrl.query.day);
+
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: '参数错误' }));
+            return;
+        }
+
+        try {
+            // lunar-calendar 库提供农历转公历功能
+            const solar = LunarCalendar.lunarToSolar(year, month, day);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+                success: true,
+                solarYear: solar.solarYear,
+                solarMonth: solar.solarMonth,
+                solarDay: solar.solarDay
+            }));
+        } catch (err) {
+            console.error('农历转公历错误:', err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: '转换失败' }));
+        }
+        return;
+    }
+
     // 处理静态文件请求
     let filePath = '';
     if (pathname === '/' || pathname === '/index.html') {

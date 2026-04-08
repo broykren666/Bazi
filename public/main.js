@@ -383,9 +383,142 @@
         animationId = requestAnimationFrame(updateClock);
     }
 
+    // 八字计算弹窗
+    let baziSelectedType = 'solar'; // 'solar' 或 'lunar'
+    
+    function initBaziModal() {
+        const overlay = document.getElementById('baziModalOverlay');
+        const calcBtn = document.getElementById('baziCalcBtn');
+        const closeBtn = document.getElementById('baziModalClose');
+        const solarBtn = document.getElementById('baziSolarBtn');
+        const lunarBtn = document.getElementById('baziLunarBtn');
+        const submitBtn = document.getElementById('baziCalcSubmit');
+        const resetBtn = document.getElementById('baziCalcReset');
+        const stepType = document.getElementById('baziStepType');
+        const stepInput = document.getElementById('baziStepInput');
+        const stepResult = document.getElementById('baziStepResult');
+        const hintEl = document.getElementById('baziInputHint');
+        
+        if (!overlay || !calcBtn) return;
+        
+        function showStep(step) {
+            [stepType, stepInput, stepResult].forEach(s => s.classList.remove('show'));
+            step.classList.add('show');
+        }
+        
+        function updateHint() {
+            const y = document.getElementById('baziInputYear').value;
+            const m = document.getElementById('baziInputMonth').value;
+            const d = document.getElementById('baziInputDay').value;
+            const h = document.getElementById('baziInputHour').value;
+            const typeLabel = baziSelectedType === 'solar' ? '公历' : '农历';
+            hintEl.textContent = `${typeLabel}：${y}年${m}月${d}日 ${h}时`;
+        }
+        
+        // 打开弹窗
+        calcBtn.addEventListener('click', () => {
+            overlay.classList.add('show');
+            showStep(stepType);
+        });
+        
+        // 关闭弹窗
+        function closeModal() {
+            overlay.classList.remove('show');
+        }
+        
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal();
+        });
+        
+        // 切换日期类型
+        solarBtn.addEventListener('click', () => {
+            baziSelectedType = 'solar';
+            solarBtn.classList.add('active');
+            lunarBtn.classList.remove('active');
+            showStep(stepInput);
+            updateHint();
+        });
+        
+        lunarBtn.addEventListener('click', () => {
+            baziSelectedType = 'lunar';
+            lunarBtn.classList.add('active');
+            solarBtn.classList.remove('active');
+            showStep(stepInput);
+            updateHint();
+        });
+        
+        // 输入变化监听
+        ['baziInputYear', 'baziInputMonth', 'baziInputDay', 'baziInputHour'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateHint);
+        });
+        
+        // 提交计算
+        submitBtn.addEventListener('click', async () => {
+            const year = parseInt(document.getElementById('baziInputYear').value);
+            const month = parseInt(document.getElementById('baziInputMonth').value);
+            const day = parseInt(document.getElementById('baziInputDay').value);
+            const hour = parseInt(document.getElementById('baziInputHour').value);
+            
+            if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hour)) {
+                alert('请填写完整信息');
+                return;
+            }
+            
+            let solarYear = year, solarMonth = month, solarDay = day;
+            
+            // 如果选择的是农历，需要转换为公历
+            if (baziSelectedType === 'lunar') {
+                try {
+                    const resp = await fetch(`/api/lunar-to-solar?year=${year}&month=${month}&day=${day}`);
+                    const data = await resp.json();
+                    if (data.success) {
+                        solarYear = data.solarYear;
+                        solarMonth = data.solarMonth;
+                        solarDay = data.solarDay;
+                    } else {
+                        alert('农历日期转换失败');
+                        return;
+                    }
+                } catch (err) {
+                    alert('农历日期转换失败');
+                    return;
+                }
+            }
+            
+            // 获取八字
+            try {
+                const resp = await fetch(`/api/lunar?year=${solarYear}&month=${solarMonth}&day=${solarDay}&hour=${hour}`);
+                const data = await resp.json();
+                if (data.success && data.bazi) {
+                    document.getElementById('baziResultYear').textContent = data.bazi.year;
+                    document.getElementById('baziResultMonth').textContent = data.bazi.month;
+                    document.getElementById('baziResultDay').textContent = data.bazi.day;
+                    document.getElementById('baziResultTime').textContent = data.bazi.time;
+                    
+                    const typeLabel = baziSelectedType === 'solar' ? '公历' : '农历';
+                    document.getElementById('baziResultInfo').textContent = 
+                        `${typeLabel}：${year}年${month}月${day}日 ${hour}时`;
+                    
+                    showStep(stepResult);
+                } else {
+                    alert('八字计算失败');
+                }
+            } catch (err) {
+                alert('八字计算失败');
+            }
+        });
+        
+        // 重新计算
+        resetBtn.addEventListener('click', () => {
+            showStep(stepType);
+        });
+    }
+
     // 初次启动
     updateTimezoneDisplay();
     initKeLabels();
+    initBaziModal();
     fetchServerTime().then(() => {
         const initialDate = getCurrentAccurateTime();
         updateLunarDisplay(initialDate);

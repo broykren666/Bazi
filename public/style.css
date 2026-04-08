@@ -194,6 +194,7 @@ body {
 .bazi-row {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 1.5rem;
     margin-bottom: 1rem;
     flex-wrap: wrap;
@@ -221,6 +222,28 @@ body {
     font-family: 'JetBrains Mono', monospace;
     letter-spacing: 3px;
     text-shadow: 0 0 10px rgba(255, 170, 85, 0.3);
+}
+
+/* 八字计算图标 */
+.bazi-calc-icon {
+    font-size: 1.3rem;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(15, 25, 40, 0.5);
+    border: 1px solid rgba(100, 150, 255, 0.2);
+    transition: all 0.2s;
+    margin-left: 0.5rem;
+}
+
+.bazi-calc-icon:hover {
+    background: rgba(62, 110, 255, 0.2);
+    border-color: rgba(136, 204, 255, 0.5);
+    transform: scale(1.1);
 }
 
 .date-box {
@@ -617,7 +640,272 @@ body {
     font-size: 0.85rem;
 }
 
-/* 容器页脚 */
+/* 弹窗 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal-content {
+    background: rgba(15, 20, 45, 0.98);
+    border: 1px solid rgba(100, 150, 255, 0.3);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 30px rgba(62, 110, 255, 0.2);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid rgba(100, 150, 255, 0.15);
+}
+
+.modal-title {
+    font-size: 1rem;
+    color: #88ccff;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.modal-close {
+    font-size: 1.2rem;
+    color: #6688bb;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: rgba(100, 150, 255, 0.2);
+    color: #88ccff;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.bazi-step {
+    display: none;
+}
+
+.bazi-step.show {
+    display: block;
+}
+
+.step-desc {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #88aacc;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+}
+
+/* 类型选择 */
+.type-options {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.type-btn {
+    flex: 1;
+    padding: 1rem;
+    background: rgba(15, 25, 40, 0.5);
+    border: 2px solid rgba(100, 150, 255, 0.2);
+    border-radius: 16px;
+    color: #8899bb;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.type-btn:hover {
+    border-color: rgba(100, 150, 255, 0.4);
+    background: rgba(20, 30, 50, 0.6);
+}
+
+.type-btn.active {
+    border-color: rgba(100, 150, 255, 0.6);
+    background: rgba(62, 110, 255, 0.15);
+    color: #88ccff;
+    box-shadow: 0 0 20px rgba(62, 110, 255, 0.2);
+}
+
+/* 输入框 */
+.input-group {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.input-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.input-row label {
+    font-size: 0.75rem;
+    color: #6688bb;
+    letter-spacing: 1px;
+}
+
+.bazi-input {
+    width: 100%;
+    padding: 0.6rem 0.4rem;
+    background: rgba(15, 25, 40, 0.8);
+    border: 1px solid rgba(100, 150, 255, 0.25);
+    border-radius: 12px;
+    color: #aabbdd;
+    font-size: 1rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.bazi-input:focus {
+    border-color: rgba(136, 204, 255, 0.6);
+    box-shadow: 0 0 15px rgba(62, 110, 255, 0.3);
+}
+
+.input-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #6688bb;
+    margin-bottom: 1rem;
+    min-height: 1.2rem;
+}
+
+/* 计算按钮 */
+.calc-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background: linear-gradient(135deg, #3e6eff 0%, #2a4acc 100%);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+}
+
+.calc-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(62, 110, 255, 0.4);
+}
+
+/* 结果展示 */
+.result-bazi {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(15, 25, 40, 0.5);
+    border-radius: 16px;
+    border: 1px solid rgba(100, 150, 255, 0.15);
+}
+
+.result-pillar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.pillar-label {
+    font-size: 0.7rem;
+    color: #6688bb;
+    letter-spacing: 1px;
+}
+
+.pillar-value {
+    font-size: 1.3rem;
+    color: #ffaa55;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(255, 170, 85, 0.3);
+}
+
+.result-info {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8899bb;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+/* 手机端适配 */
+@media (max-width: 640px) {
+    .modal-content {
+        max-width: 100%;
+        border-radius: 20px;
+    }
+    
+    .modal-body {
+        padding: 1.2rem;
+    }
+    
+    .input-group {
+        gap: 0.6rem;
+    }
+    
+    .bazi-input {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.9rem;
+    }
+    
+    .result-bazi {
+        gap: 1rem;
+        padding: 0.8rem;
+    }
+    
+    .pillar-value {
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+    }
+}
 .clock-footer {
     text-align: center;
     font-size: 0.7rem;
