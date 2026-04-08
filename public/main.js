@@ -172,20 +172,19 @@
         // 更新进度条
         const progressFill = document.getElementById('progressFill');
         const progressThumb = document.getElementById('progressThumb');
-        const progressKeLabel = document.getElementById('progressKeLabel');
         if (progressFill) {
             progressFill.style.width = `${progressPercent}%`;
         }
         if (progressThumb) {
             progressThumb.style.left = `${progressPercent}%`;
         }
-        // 刻数标签跟随滑块
-        if (progressKeLabel) {
-            progressKeLabel.style.left = `${progressPercent}%`;
-            const totalMinutes = secondsFromStart / 60;
-            const ke = getKe(totalMinutes);
-            progressKeLabel.textContent = ke;
-        }
+        
+        // 更新刻数标签高亮
+        const totalMinutes = secondsFromStart / 60;
+        const currentKe = Math.min(Math.floor(totalMinutes / 15), 7);
+        document.querySelectorAll('.ke-label').forEach((el, i) => {
+            el.classList.toggle('active', i === currentKe);
+        });
         
         // 更新时辰名称和时间范围
         const shichenNameElem = document.getElementById('progressShichenName');

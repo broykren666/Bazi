@@ -190,24 +190,32 @@ body {
     }
 }
 
-/* 刻数标签（跟随滑块显示在下方） */
-.progress-ke-label {
-    position: absolute;
-    top: calc(100% + 8px);
-    transform: translateX(-50%);
-    font-size: 0.8rem;
+/* 刻数标签行（固定在进度条下方） */
+.progress-ke-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 8px;
+    padding: 0 2%;
+    min-height: 22px;
+}
+
+.ke-label {
+    font-size: 0.7rem;
+    color: #6688bb;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    opacity: 0.6;
+    text-align: center;
+    transition: all 0.3s;
+    width: calc(100% / 8);
+}
+
+.ke-label.active {
     color: #88ccff;
+    opacity: 1;
     font-weight: 600;
-    letter-spacing: 1px;
-    white-space: nowrap;
-    background: rgba(15, 26, 58, 0.9);
-    padding: 3px 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(100, 150, 255, 0.3);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    transition: left 0.5s ease;
-    pointer-events: none;
-    z-index: 15;
+    text-shadow: 0 0 8px rgba(136, 204, 255, 0.5);
 }
 
 .time-wrapper {
