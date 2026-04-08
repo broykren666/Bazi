@@ -136,14 +136,45 @@
         return hour.toString().padStart(2, '0') + ':00';
     }
 
-    // 计算当前时辰已过的刻数（每个时辰2小时=120分钟，分为8刻，每刻15分钟）
-    function getKe(minutes) {
-        const ke = Math.floor(minutes / 15);
-        if (ke === 0) return '初刻';
-        if (ke >= 8) return '正刻';
-        return `${['', '一', '二', '三', '四', '五', '六', '七'][ke]}刻`;
+    // 计算当前时辰已过的刻数（初/正制：每个时辰分为初和正，各4刻）
+    function getKe(shichenName, minutes) {
+        const halfHour = 60; // 每个时辰分为初/正各60分钟
+        const isFirstHalf = minutes < halfHour;
+        const periodName = isFirstHalf ? '初' : '正';
+        const minutesInPeriod = isFirstHalf ? minutes : (minutes - halfHour);
+        const ke = Math.floor(minutesInPeriod / 15);
+        const keNames = ['初', '一', '二', '三'];
+        return `${shichenName}${periodName}${keNames[ke]}`;
     }
 
+    // 初始化刻数标签
+    function initKeLabels() {
+        const container = document.getElementById('progressKeLabels');
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 0; i < 8; i++) {
+            const span = document.createElement('span');
+            span.className = 'ke-label';
+            span.dataset.index = i;
+            span.textContent = i < 4 ? '初初' : '正初'; // 初始占位，后续动态更新
+            container.appendChild(span);
+        }
+    }
+
+    // 更新刻数标签文本（根据当前时辰）
+    function updateKeLabels(shichenName) {
+        const keNames = [
+            `${shichenName}初初`, `${shichenName}初一`, `${shichenName}初二`, `${shichenName}初三`,
+            `${shichenName}正初`, `${shichenName}正一`, `${shichenName}正二`, `${shichenName}正三`
+        ];
+        document.querySelectorAll('.ke-label').forEach((el, i) => {
+            if (keNames[i]) {
+                el.textContent = keNames[i];
+            }
+        });
+    }
+
+    let lastShichenIndex = -1;
     function updateShichenDisplay(date) {
         const hours = date.getHours();
         const minutes = date.getMinutes();
@@ -169,6 +200,13 @@
         const progress = Math.min(Math.max(secondsFromStart / totalShichenSeconds, 0), 1);
         const progressPercent = Math.round(progress * 100);
         
+        // 时辰变化时，更新刻数标签
+        if (shichenIndex !== lastShichenIndex) {
+            lastShichenIndex = shichenIndex;
+            initKeLabels();
+            updateKeLabels(currentShichen.name);
+        }
+        
         // 更新进度条
         const progressFill = document.getElementById('progressFill');
         const progressThumb = document.getElementById('progressThumb');
@@ -179,7 +217,7 @@
             progressThumb.style.left = `${progressPercent}%`;
         }
         
-        // 更新刻数标签高亮
+        // 更新刻数标签高亮（初/正制）
         const totalMinutes = secondsFromStart / 60;
         const currentKe = Math.min(Math.floor(totalMinutes / 15), 7);
         document.querySelectorAll('.ke-label').forEach((el, i) => {
@@ -331,6 +369,7 @@
 
     // 初次启动
     updateTimezoneDisplay();
+    initKeLabels();
     fetchServerTime().then(() => {
         const initialDate = getCurrentAccurateTime();
         updateLunarDisplay(initialDate);
