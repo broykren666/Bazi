@@ -502,13 +502,13 @@ body {
 .progress-thumb {
     position: absolute;
     top: 50%;
-    width: 22px;
-    height: 22px;
+    width: 16px;
+    height: 16px;
     background: radial-gradient(circle, #aaddff 0%, #3e6eff 100%);
-    border: 3px solid #cde4ff;
+    border: 2px solid #cde4ff;
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 0 0 20px rgba(62, 110, 255, 0.8), 0 0 40px rgba(62, 110, 255, 0.4);
+    box-shadow: 0 0 15px rgba(62, 110, 255, 0.7), 0 0 30px rgba(62, 110, 255, 0.3);
     animation: thumbPulse 2s ease-in-out infinite;
     transition: left 0.5s ease;
     z-index: 10;
