@@ -744,11 +744,29 @@ body {
     font-size: 0.75rem;
     cursor: pointer;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .quick-btn:hover {
     background: rgba(62, 110, 255, 0.2);
     border-color: rgba(136, 204, 255, 0.4);
+}
+
+.bazi-action-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.bazi-action-row .quick-btn {
+    flex-shrink: 0;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+}
+
+.bazi-action-row .calc-btn {
+    flex: 1;
+    margin: 0;
 }
 
 /* 下拉选择 */

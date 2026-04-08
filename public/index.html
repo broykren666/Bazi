@@ -109,7 +109,6 @@
                 
                 <!-- 步骤2：输入日期时间 -->
                 <div class="bazi-step" id="baziStepInput">
-                    <button class="quick-btn" id="baziNowBtn" style="margin: 0 auto 1rem; display: block;">⏰ 此刻</button>
                     <div class="input-group">
                         <div class="input-row">
                             <label>年</label>
@@ -143,7 +142,10 @@
                     </div>
                     <div class="input-hint" id="baziInputHint">公历：2026年1月1日 午时</div>
                     <div class="error-msg" id="baziInputError"></div>
-                    <button class="calc-btn" id="baziCalcSubmit">开始计算</button>
+                    <div class="bazi-action-row">
+                        <button class="quick-btn" id="baziNowBtn">⏰ 此刻</button>
+                        <button class="calc-btn" id="baziCalcSubmit">开始计算</button>
+                    </div>
                 </div>
                 
                 <!-- 步骤3：显示结果 -->
