@@ -811,10 +811,11 @@ body {
 
 /* 输入框 */
 .input-group {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    justify-content: center;
     gap: 0.8rem;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
 }
 
 .input-row {
@@ -822,6 +823,22 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 0.4rem;
+}
+
+.input-row:nth-child(1) .bazi-input { /* 年 */
+    width: 80px;
+}
+
+.input-row:nth-child(2) .bazi-input { /* 月 */
+    width: 60px;
+}
+
+.input-row:nth-child(3) .bazi-input { /* 日 */
+    width: 60px;
+}
+
+.input-row:nth-child(4) .bazi-input { /* 时辰 */
+    width: 130px;
 }
 
 .input-row label {
