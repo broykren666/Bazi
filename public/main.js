@@ -630,9 +630,9 @@
                 return;
             }
 
-            const cacheKey = `${baziSelectedType}-${year}-${month}-${day}-${shichenIdx}`;
+            const cacheKey = `${baziSelectedType}-${year}-${month}-${day}-${hour}-${minute}`;
             if (baziResultCache[cacheKey]) {
-                displayBaziResult(baziResultCache[cacheKey], year, month, day, shichenIdx);
+                displayBaziResult(baziResultCache[cacheKey], year, month, day, hour, minute);
                 return;
             }
 
