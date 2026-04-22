@@ -749,25 +749,47 @@ body {
 }
 
 /* 公历/农历单选行 - 占满整行标签样式 */
+/* 滑动胶囊切换器 */
 .bazi-type-row {
+    position: relative;
     display: flex;
-    gap: 0.6rem;
-    margin-bottom: 1rem;
+    background: rgba(10, 15, 30, 0.6);
+    border: 1px solid rgba(100, 150, 255, 0.2);
+    border-radius: 16px;
+    padding: 4px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.type-slider {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    background: linear-gradient(135deg, rgba(62, 110, 255, 0.3) 0%, rgba(62, 110, 255, 0.6) 100%);
+    border: 1px solid rgba(100, 150, 255, 0.4);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(62, 110, 255, 0.3);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.bazi-type-row:has(.type-label[data-type="lunar"].active) .type-slider {
+    transform: translateX(100%);
 }
 
 .type-label {
+    position: relative;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    padding: 0.7rem;
-    background: rgba(15, 25, 40, 0.5);
-    border: 2px solid rgba(100, 150, 255, 0.2);
-    border-radius: 14px;
+    padding: 0.8rem;
     cursor: pointer;
-    transition: all 0.25s;
-    user-select: none;
-    flex: 1;
+    z-index: 2;
+    transition: all 0.3s;
 }
 
 .type-label input {
@@ -777,24 +799,18 @@ body {
 .type-label span {
     font-size: 0.95rem;
     color: #8899bb;
-    font-weight: 500;
-    transition: color 0.25s;
-    letter-spacing: 0.5px;
-}
-
-.type-label:hover {
-    border-color: rgba(100, 150, 255, 0.4);
-    background: rgba(20, 30, 50, 0.6);
-}
-
-.type-label.active {
-    border-color: rgba(100, 150, 255, 0.6);
-    background: rgba(62, 110, 255, 0.2);
-    box-shadow: 0 0 20px rgba(62, 110, 255, 0.15);
+    font-weight: 600;
+    letter-spacing: 2px;
+    transition: all 0.3s;
 }
 
 .type-label.active span {
-    color: #aaddff;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.type-label:not(.active):hover span {
+    color: #aabbdd;
 }
 
 /* 输入预览 */
