@@ -526,9 +526,11 @@
             const y = document.getElementById('baziInputYear').value;
             const m = document.getElementById('baziInputMonth').value;
             const d = document.getElementById('baziInputDay').value;
-            const scIdx = parseInt(document.getElementById('baziInputShichen').value);
+            const h = document.getElementById('baziInputHour').value;
+            const min = document.getElementById('baziInputMinute').value;
+            const sc = getChineseTimePeriod(parseInt(h)).name;
             const typeLabel = baziSelectedType === 'solar' ? '公历' : '农历';
-            previewEl.textContent = `${typeLabel}：${y}年${m}月${d}日 ${shichenNames[scIdx]}`;
+            previewEl.textContent = `${typeLabel}：${y}年${m}月${d}日 ${h}:${min.padStart(2, '0')} (${sc})`;
         }
 
         // 打开弹窗
@@ -556,7 +558,7 @@
         });
 
         // 输入变化
-        ['baziInputYear', 'baziInputMonth', 'baziInputDay', 'baziInputShichen'].forEach(id => {
+        ['baziInputYear', 'baziInputMonth', 'baziInputDay', 'baziInputHour', 'baziInputMinute'].forEach(id => {
             document.getElementById(id).addEventListener('input', updatePreview);
         });
 
@@ -566,13 +568,15 @@
             const year = now.getFullYear();
             const month = now.getMonth() + 1;
             const day = now.getDate();
-            const shichenIdx = Math.floor(((now.getHours() + 1) % 24) / 2);
+            const hour = now.getHours();
+            const minute = now.getMinutes();
 
-            document.getElementById('baziInputShichen').value = shichenIdx;
+            document.getElementById('baziInputHour').value = hour;
+            document.getElementById('baziInputMinute').value = minute;
 
             if (baziSelectedType === 'lunar') {
                 try {
-                    const resp = await fetch(`/api/lunar?year=${year}&month=${month}&day=${day}&hour=${now.getHours()}`);
+                    const resp = await fetch(`/api/lunar?year=${year}&month=${month}&day=${day}&hour=${hour}&minute=${minute}`);
                     const data = await resp.json();
                     if (data.success && data.bazi) {
                         document.getElementById('baziInputYear').value = data.bazi.lunarYear;
@@ -614,10 +618,10 @@
             const year = parseInt(document.getElementById('baziInputYear').value);
             const month = parseInt(document.getElementById('baziInputMonth').value);
             const day = parseInt(document.getElementById('baziInputDay').value);
-            const shichenIdx = parseInt(document.getElementById('baziInputShichen').value);
-            const hour = shichenIdx * 2 + 1;
+            const hour = parseInt(document.getElementById('baziInputHour').value);
+            const minute = parseInt(document.getElementById('baziInputMinute').value);
 
-            if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(shichenIdx)) {
+            if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hour) || isNaN(minute)) {
                 showError(errorEl, '请填写完整信息');
                 return;
             }
@@ -661,7 +665,7 @@
                 }
 
                 try {
-                    const resp = await fetchWithTimeout(`/api/lunar?year=${solarYear}&month=${solarMonth}&day=${solarDay}&hour=${hour}`);
+                    const resp = await fetchWithTimeout(`/api/lunar?year=${solarYear}&month=${solarMonth}&day=${solarDay}&hour=${hour}&minute=${minute}`);
                     const data = await resp.json();
                     if (data.success && data.bazi) {
                         // 附加转换后的公历信息（如果是从农历模式来的）
@@ -669,7 +673,7 @@
                             data.convertedSolar = { year: solarYear, month: solarMonth, day: solarDay };
                         }
                         baziResultCache[cacheKey] = data;
-                        displayBaziResult(data, year, month, day, shichenIdx);
+                        displayBaziResult(data, year, month, day, hour, minute);
                     } else {
                         showError(errorEl, data.error || '八字计算失败');
                     }
@@ -683,7 +687,7 @@
         });
 
         // 显示结果
-        function displayBaziResult(data, year, month, day, shichenIdx) {
+        function displayBaziResult(data, year, month, day, hour, minute) {
             const bazi = data.bazi;
             if (!bazi) return;
             baziLastResult = bazi;
@@ -724,7 +728,8 @@
             }
 
             // 更新结果信息行：公历/农历对照显示
-            const timeStr = shichenNames[shichenIdx];
+            const sc = getChineseTimePeriod(hour).name;
+            const timeStr = `${hour}:${minute.toString().padStart(2, '0')} (${sc})`;
             const infoEl = document.getElementById('baziResultInfo');
             
             if (baziSelectedType === 'solar') {

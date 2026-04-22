@@ -17,9 +17,9 @@ function isValidDateRange(year, month, day) {
 }
 
 // 计算八字（四柱）
-function calculateBazi(solarYear, solarMonth, solarDay, hour) {
+function calculateBazi(solarYear, solarMonth, solarDay, hour, minute = 0) {
     try {
-        const solar = Solar.fromYmdHms(solarYear, solarMonth, solarDay, hour, 0, 0);
+        const solar = Solar.fromYmdHms(solarYear, solarMonth, solarDay, hour, minute, 0);
         const lunar = solar.getLunar();
         const eightChar = lunar.getEightChar();
 
@@ -163,8 +163,9 @@ const server = http.createServer((req, res) => {
         const month = parseInt(parsedUrl.query.month);
         const day = parseInt(parsedUrl.query.day);
         const hour = parseInt(parsedUrl.query.hour) || 0;
+        const minute = parseInt(parsedUrl.query.minute) || 0;
 
-        console.log(`[八字API] 请求: year=${year}, month=${month}, day=${day}, hour=${hour}`);
+        console.log(`[八字API] 请求: year=${year}, month=${month}, day=${day}, hour=${hour}, minute=${minute}`);
 
         if (!isValidDateRange(year, month, day)) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -173,11 +174,11 @@ const server = http.createServer((req, res) => {
         }
 
         try {
-            const solar = Solar.fromYmdHms(year, month, day, hour, 0, 0);
+            const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0);
             const lunar = solar.getLunar();
             
             const lunarStr = `${lunar.getYearInGanZhi()}${branchToZodiac[lunar.getYearInGanZhi().charAt(1)]}年 ${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
-            const bazi = calculateBazi(year, month, day, hour);
+            const bazi = calculateBazi(year, month, day, hour, minute);
 
             // 让 lunar-javascript 提供精准节气
             let jieqi = null;
