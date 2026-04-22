@@ -109,8 +109,10 @@ function calculateBazi(solarYear, solarMonth, solarDay, hour) {
         return null;
     }
 }
-
-const PORT = 3243;
+// 使用环境变量中的 PORT，如果没有则用 8100 作为备选
+const PORT = process.env.PORT || 8100;
+// 监听 IPv6 地址（Alwaysdata 要求）
+const HOST = '::';  // 添加这一行，放在 PORT 定义附近
 const REQUEST_TIMEOUT = 10000; // 10秒超时
 
 // 定义MIME类型
@@ -379,8 +381,8 @@ const server = http.createServer((req, res) => {
 
 server._cachedTimeIs = null;
 server.setTimeout(REQUEST_TIMEOUT);
-server.listen(PORT, () => {
-    console.log(`✅ 精准时钟服务已启动（含农历）→ http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+    console.log(`✅ 精准时钟服务已启动（含农历）→ http://[${HOST}]:${PORT}`);
     console.log(`📅 提供类似 time.is 的实时日期时间 + 农历显示`);
     console.log(`💡 按 Ctrl + C 停止服务器`);
 });
